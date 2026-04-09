@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AIESEC IBDRS — Debt Recovery Payment Paths</title>
+<title>AIESEC IBDRS — Commitment-Based Debt Recovery</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--blue:#037EF3;--red:#F85A40;--green:#00C16E;--purple:#7552CC;--teal:#0CB9C1;--orange:#F48924;--yellow:#FFC845;--dark:#52565E;--lgray:#CACCD1;--offwhite:#F3F4F7;--bg:#fff;--surface:#F7F8FA;--border:#E2E5EA;--t1:#1A1D23;--t2:#6B7280;--t3:#9CA3AF;--sh:0 1px 3px rgba(0,0,0,.06);--shm:0 4px 12px rgba(0,0,0,.08);--r:12px;--rs:8px}
+:root{--blue:#037EF3;--red:#F85A40;--green:#00C16E;--purple:#7552CC;--teal:#0CB9C1;--orange:#F48924;--yellow:#FFC845;--dark:#52565E;--lgray:#CACCD1;--offwhite:#F3F4F7;--surface:#F7F8FA;--border:#E2E5EA;--t1:#1A1D23;--t2:#6B7280;--t3:#9CA3AF;--sh:0 1px 3px rgba(0,0,0,.06);--shm:0 4px 12px rgba(0,0,0,.08);--r:12px;--rs:8px}
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Outfit',sans-serif;background:var(--offwhite);color:var(--t1);-webkit-font-smoothing:antialiased}
 .hdr{background:linear-gradient(135deg,var(--blue),#0260BD);position:relative;overflow:hidden}
 .hdr::before{content:'';position:absolute;top:-40%;right:-8%;width:450px;height:450px;background:radial-gradient(circle,rgba(255,255,255,.08),transparent 70%);border-radius:50%}
-.hdr-in{max-width:1440px;margin:0 auto;padding:24px 44px;position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between}
+.hdr-in{max-width:1440px;margin:0 auto;padding:24px 44px;position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
 .hdr h1{font-size:24px;font-weight:800;color:#fff}.hdr h1 b{color:var(--yellow)}.hdr p{color:rgba(255,255,255,.65);font-size:12px;margin-top:3px}
-.hdr-stats{display:flex;gap:10px}.hdr-stat{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:var(--rs);padding:8px 16px;text-align:center}
+.hdr-stats{display:flex;gap:10px;flex-wrap:wrap}.hdr-stat{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);border-radius:var(--rs);padding:8px 16px;text-align:center}
 .hdr-stat .n{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:700;color:#fff}.hdr-stat .l{font-size:9px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.7px;margin-top:1px}
 .ct{max-width:1440px;margin:0 auto;padding:24px 44px 56px}
 .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
@@ -23,293 +23,274 @@
 .cg{display:flex;align-items:center;gap:6px}.cg label{font-size:11px;font-weight:600;color:var(--t2);white-space:nowrap}
 .cg select,.cg input{background:var(--surface);border:1px solid var(--border);color:var(--t1);padding:7px 12px;border-radius:var(--rs);font-family:'Outfit';font-size:12px;font-weight:500;outline:none}
 .cg select:focus,.cg input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(3,126,243,.1)}
-.tabs{display:flex;gap:2px;margin-bottom:20px;background:var(--surface);border-radius:var(--r);padding:3px;border:1px solid var(--border);width:fit-content}
-.tab{padding:9px 22px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;color:var(--t2);border:none;background:none;font-family:'Outfit';white-space:nowrap;transition:.2s}
+.tabs{display:flex;gap:2px;margin-bottom:20px;background:var(--surface);border-radius:var(--r);padding:3px;border:1px solid var(--border);width:fit-content;flex-wrap:wrap}
+.tab{padding:9px 20px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;color:var(--t2);border:none;background:none;font-family:'Outfit';white-space:nowrap;transition:.2s}
 .tab.on{background:var(--blue);color:#fff;box-shadow:0 2px 8px rgba(3,126,243,.3)}.tab:hover:not(.on){color:var(--t1);background:rgba(3,126,243,.05)}
 .pn{display:none;animation:fi .25s}.pn.on{display:block}@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .cd{background:#fff;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-bottom:20px}
 .cd-h{padding:16px 20px;border-bottom:1px solid var(--border)}.cd-h h3{font-size:14px;font-weight:700}.cd-b{padding:20px}
-.tw{max-height:600px;overflow:auto;border-radius:var(--r);border:1px solid var(--border);background:#fff;box-shadow:var(--sh)}
+.inc-model{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.inc-card{background:#fff;border:2px solid var(--border);border-radius:var(--r);padding:20px;text-align:center;box-shadow:var(--sh)}
+.inc-card .dur{font-size:20px;font-weight:800;margin-bottom:2px}
+.inc-card .pct{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;margin:8px 0}
+.inc-card .desc{font-size:11px;color:var(--t2);line-height:1.5}
+.tw{max-height:620px;overflow:auto;border-radius:var(--r);border:1px solid var(--border);background:#fff;box-shadow:var(--sh)}
 table{width:100%;border-collapse:collapse}thead{position:sticky;top:0;z-index:5}
 th{background:var(--surface);color:var(--t2);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap}
 td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:11px}tr:hover td{background:rgba(3,126,243,.02)}
 .R{text-align:right}.M{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500}
-.rg{display:inline-flex;padding:2px 8px;border-radius:5px;font-size:9px;font-weight:700;letter-spacing:.3px}
+.total-row td{background:var(--surface);font-weight:700;border-top:2px solid var(--border)}
+.rg{display:inline-flex;padding:2px 8px;border-radius:5px;font-size:9px;font-weight:700}
 .rg-AP{background:rgba(12,185,193,.1);color:var(--teal)}.rg-Europe{background:rgba(117,82,204,.1);color:var(--purple)}.rg-Americas{background:rgba(3,126,243,.1);color:var(--blue)}.rg-MEA{background:rgba(244,137,36,.1);color:var(--orange)}
 .tier{display:inline-flex;padding:2px 8px;border-radius:5px;font-size:9px;font-weight:700}
 .tier-A{background:rgba(248,90,64,.1);color:var(--red)}.tier-B{background:rgba(244,137,36,.1);color:var(--orange)}.tier-C{background:rgba(255,200,69,.15);color:#b8860b}.tier-D{background:rgba(3,126,243,.1);color:var(--blue)}.tier-E{background:rgba(0,193,110,.1);color:var(--green)}
-.prog{display:flex;height:7px;border-radius:4px;overflow:hidden;background:var(--surface);border:1px solid var(--border);min-width:90px}
-.prog-f{height:100%;border-radius:4px;transition:width .4s}
 .ic{display:inline-block;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:700;font-family:'IBM Plex Mono';background:rgba(0,193,110,.08);color:var(--green);border:1px solid rgba(0,193,110,.15)}
 .pos{color:var(--green)}.neg{color:var(--red)}.blu{color:var(--blue)}.org{color:var(--orange)}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.prog{display:flex;height:7px;border-radius:4px;overflow:hidden;background:var(--surface);border:1px solid var(--border);min-width:90px}
+.prog-f{height:100%;border-radius:4px;transition:width .4s}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
 .bca{display:flex;align-items:flex-end;gap:5px;height:170px;padding:10px 0}
 .bc{display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end}
 .bs{width:100%;max-width:44px;border-radius:3px 3px 0 0;transition:height .4s;cursor:pointer;position:relative}
 .bs:hover{filter:brightness(1.12)}.bs::after{content:attr(data-t);position:absolute;top:-24px;left:50%;transform:translateX(-50%);background:var(--t1);color:#fff;padding:2px 6px;border-radius:4px;font-size:9px;font-family:'IBM Plex Mono';white-space:nowrap;opacity:0;pointer-events:none;transition:.15s}
 .bs:hover::after{opacity:1}.bm{font-size:8px;font-weight:600;color:var(--t3);margin-top:6px}
-.rc{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);border-top:4px solid transparent}
-.rc h4{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px}
-.rs{display:flex;justify-content:space-between;padding:5px 0;font-size:12px}.rs+.rs{border-top:1px solid var(--border)}
-.rs span:first-child{color:var(--t2)}.rs span:last-child{font-family:'IBM Plex Mono';font-weight:600;font-size:11px}
-.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
-.sc{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:22px;box-shadow:var(--sh);text-align:center;border-top:4px solid transparent}
-.sc h4{font-size:12px;font-weight:700;margin-bottom:3px}.sc .pm{font-size:10px;color:var(--t3);margin-bottom:12px}
-.sc .bn{font-family:'IBM Plex Mono';font-size:26px;font-weight:700}.sc .dt{font-size:11px;color:var(--t2);margin-top:8px;line-height:1.6}
-/* Entity detail */
 .eh{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:24px;box-shadow:var(--sh);margin-bottom:18px}
-.eh-top{display:flex;align-items:center;gap:14px;margin-bottom:18px}.eh-top h2{font-size:20px;font-weight:800}
+.eh-top{display:flex;align-items:center;gap:14px;margin-bottom:18px;flex-wrap:wrap}.eh-top h2{font-size:20px;font-weight:800}
 .ek{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .ek-i{background:var(--surface);border-radius:var(--rs);padding:14px}
 .ek-l{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--t3);font-weight:600;margin-bottom:4px}
 .ek-v{font-family:'IBM Plex Mono';font-size:18px;font-weight:700}
-.pp{background:var(--surface);border-radius:var(--rs);padding:14px 16px;margin:14px 0;font-size:12px;line-height:1.7;color:var(--t2);border-left:4px solid var(--blue)}
-.pp b{color:var(--t1)}
-/* Recs */
+.scenario-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.scenario-card{border:2px solid var(--border);border-radius:var(--r);padding:16px;text-align:center;background:#fff;transition:.2s}
+.scenario-card:hover{box-shadow:var(--shm)}.scenario-card.best{border-color:var(--green);background:rgba(0,193,110,.03)}
+.scenario-card h4{font-size:11px;font-weight:700;margin-bottom:2px}.scenario-card .sp{font-size:10px;color:var(--t3);margin-bottom:10px}
+.scenario-card .sv{font-family:'IBM Plex Mono';font-size:22px;font-weight:700}
+.scenario-card .sd{font-size:10px;color:var(--t2);margin-top:6px;line-height:1.5;text-align:left}
+.rc{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--sh);border-top:4px solid transparent}
+.rc h4{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.rs{display:flex;justify-content:space-between;padding:5px 0;font-size:12px}.rs+.rs{border-top:1px solid var(--border)}
+.rs span:first-child{color:var(--t2)}.rs span:last-child{font-family:'IBM Plex Mono';font-weight:600;font-size:11px}
 .rl{list-style:none}.ri{padding:14px 18px;border-radius:var(--rs);margin-bottom:8px;border-left:4px solid;background:var(--surface);font-size:12px;line-height:1.7}
 .ri strong{display:block;margin-bottom:3px;font-size:13px;color:var(--t1)}
 .ft{margin-top:28px;padding:18px 22px;background:#fff;border:1px solid var(--border);border-radius:var(--r);font-size:11px;line-height:1.7;color:var(--t2);box-shadow:var(--sh)}.ft b{color:var(--t1)}
-.total-row td{background:var(--surface);font-weight:700;border-top:2px solid var(--border)}
-@media(max-width:1100px){.kpis{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(2,1fr)}.sg{grid-template-columns:1fr}.ct{padding:18px 20px 40px}.hdr-in{padding:18px 20px;flex-direction:column;align-items:flex-start;gap:14px}}
+/* Agreement */
+.btn-gen{background:var(--blue);color:#fff;border:none;padding:10px 20px;border-radius:var(--rs);font-family:'Outfit';font-size:13px;font-weight:600;cursor:pointer;transition:.2s;margin-top:12px}
+.btn-gen:hover{background:#0260BD;box-shadow:var(--shm)}
+.agreement-preview{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:40px 50px;max-width:800px;margin:20px auto;box-shadow:var(--shm);font-family:'Times New Roman',serif;font-size:14px;line-height:1.8;color:#000}
+.agreement-preview h2{font-family:'Outfit',sans-serif;font-size:12px;letter-spacing:2px;color:var(--blue);margin-bottom:20px}
+.agreement-preview .ag-title{font-weight:700;font-size:14px;margin:16px 0 8px}
+.agreement-preview .ag-date{text-align:right;margin-bottom:20px;font-size:13px}
+.agreement-preview .ag-sig{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-top:40px;padding-top:20px;border-top:1px solid #ccc}
+.agreement-preview .ag-sig div{font-size:12px;line-height:1.5}
+.agreement-preview .sig-line{border-bottom:1px solid #000;height:40px;margin-bottom:4px}
+@media print{body{background:#fff}.hdr,.cbar,.tabs,.kpis,.inc-model,.ft,.cd,.btn-gen,.pn:not(#p5){display:none!important}#p5{display:block!important}.ct{padding:0}.agreement-preview{box-shadow:none;border:none;padding:20px}}
+@media(max-width:1100px){.kpis,.inc-model,.scenario-grid,.ek{grid-template-columns:repeat(2,1fr)}.g4{grid-template-columns:repeat(2,1fr)}.ct{padding:18px 20px 40px}.hdr-in{padding:18px 20px}}
+@media(max-width:600px){.kpis,.inc-model,.scenario-grid,.ek{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="hdr"><div class="hdr-in"><div><h1>IBDRS <b>Debt Recovery Payment Paths</b></h1><p>Realistic Tiered Repayment Plans &mdash; 12-Month Projection | Jun 2026 Opening Balance | CAD</p></div><div class="hdr-stats"><div class="hdr-stat"><div class="n">81</div><div class="l">Entities</div></div><div class="hdr-stat"><div class="n">$1.24M</div><div class="l">Total Debt</div></div><div class="hdr-stat"><div class="n">5</div><div class="l">Debt Tiers</div></div></div></div></div>
+<div class="hdr"><div class="hdr-in"><div><h1>IBDRS <b>Commitment-Based Debt Recovery</b></h1><p>The longer you commit, the more you save &mdash; 12-Month Projections | Jun 2026 | CAD</p></div><div class="hdr-stats"><div class="hdr-stat"><div class="n">81</div><div class="l">Entities</div></div><div class="hdr-stat"><div class="n">$1.24M</div><div class="l">Total Debt</div></div><div class="hdr-stat"><div class="n">10%</div><div class="l">Max Incentive</div></div></div></div></div>
 <div class="ct">
+<div class="inc-model">
+<div class="inc-card" style="border-color:var(--yellow)"><div class="dur">1 Month</div><div class="pct" style="color:var(--yellow)">0.5%</div><div class="desc">Quick start reward</div></div>
+<div class="inc-card" style="border-color:var(--orange)"><div class="dur">3 Months</div><div class="pct" style="color:var(--orange)">3%</div><div class="desc">Short-term commitment</div></div>
+<div class="inc-card" style="border-color:var(--blue)"><div class="dur">6 Months</div><div class="pct" style="color:var(--blue)">7%</div><div class="desc">Medium-term plan</div></div>
+<div class="inc-card" style="border-color:var(--green)"><div class="dur">12 Months</div><div class="pct" style="color:var(--green)">10%</div><div class="desc">Maximum reward</div></div>
+</div>
 <div id="kpis" class="kpis"></div>
 <div class="cbar">
 <div class="cg"><label>Region</label><select id="rf" onchange="R()"><option value="All">All</option><option value="AP">Asia Pacific</option><option value="Europe">Europe</option><option value="Americas">Americas</option><option value="MEA">MEA</option></select></div>
-<div class="cg"><label>Tier</label><select id="tf" onchange="R()"><option value="All">All Tiers</option><option value="A">A: &gt;$100K (Critical)</option><option value="B">B: $25K-$100K (High)</option><option value="C">C: $10K-$25K (Medium)</option><option value="D">D: $3K-$10K (Low)</option><option value="E">E: &lt;$3K (Quick Win)</option></select></div>
+<div class="cg"><label>Commitment</label><select id="cm" onchange="R()"><option value="12" selected>12 Months (10%)</option><option value="6">6 Months (7%)</option><option value="3">3 Months (3%)</option><option value="1">1 Month (0.5%)</option></select></div>
 <div class="cg"><label>Enrollment</label><select id="er" onchange="R()"><option value="1">100%</option><option value=".75" selected>75%</option><option value=".5">50%</option></select></div>
 <div class="cg" style="margin-left:auto"><label>Search</label><input type="text" id="q" placeholder="Name or ISO..." oninput="R()" style="width:160px"></div>
 </div>
-<div class="tabs"><button class="tab on" onclick="T('p1',this)">Payment Plans</button><button class="tab" onclick="T('p2',this)">Entity Detail</button><button class="tab" onclick="T('p3',this)">Regional</button><button class="tab" onclick="T('p4',this)">Strategy</button></div>
+<div class="tabs">
+<button class="tab on" onclick="T('p1',this)">Payment Plans</button>
+<button class="tab" onclick="T('p2',this)">Entity Detail</button>
+<button class="tab" onclick="T('p3',this)">Regional</button>
+<button class="tab" onclick="T('p4',this)">Strategy</button>
+<button class="tab" onclick="T('p5',this)" style="background:rgba(0,193,110,.1);color:var(--green)">Generate Agreement</button>
+</div>
 
+<!-- TAB 1 -->
 <div id="p1" class="pn on">
-<div class="cd"><div class="cd-h"><h3>Tier System &mdash; Payment Path Logic</h3></div><div class="cd-b" style="padding:16px 20px;font-size:12px;line-height:1.8;color:var(--t2)">
-<b style="color:var(--t1)">Not all entities can pay off debt in 9 months.</b> The IBDRS assigns realistic payment paths based on debt size:<br>
-<span class="tier tier-A">TIER A</span> <b>&gt;$100K</b> &mdash; 12-month plan, pay <b>40%</b> of debt (M1:10%, then ~2.7%/mo). Remaining rolls to next MC term. Incentive: up to 4%.<br>
-<span class="tier tier-B">TIER B</span> <b>$25K-$100K</b> &mdash; 12-month plan, pay <b>60%</b> of debt (M1:15%, then ~4.1%/mo). Incentive: up to 6%.<br>
-<span class="tier tier-C">TIER C</span> <b>$10K-$25K</b> &mdash; 9-month plan, pay <b>80%</b> of debt (M1:20%, then ~7.5%/mo). Incentive: up to 8%.<br>
-<span class="tier tier-D">TIER D</span> <b>$3K-$10K</b> &mdash; 6-month plan, pay <b>100%</b> with IBDRS milestones (M1:30%, M2:50%, M3:75%, settle by M3). Incentive: up to 10%.<br>
-<span class="tier tier-E">TIER E</span> <b>&lt;$3K</b> &mdash; <b>Full settlement in 1-3 months.</b> Pay 100% upfront or in 2 installments. Incentive: up to 10%.
+<div class="g2"><div class="cd"><div class="cd-h"><h3>Monthly Collections</h3></div><div class="cd-b"><div id="c1" class="bca"></div></div></div><div class="cd"><div class="cd-h"><h3>Cumulative Recovered</h3></div><div class="cd-b"><div id="c2" class="bca"></div></div></div></div>
+<div class="tw"><table><thead><tr><th>Tier</th><th>Region</th><th>ISO</th><th>Entity</th><th class="R">Debt</th><th class="R">Monthly</th><th>Commitment</th><th class="R">Payments</th><th class="R">Incentive</th><th class="R">Settled</th><th style="min-width:90px">Progress</th><th class="R">Remaining</th></tr></thead><tbody id="tb"></tbody></table></div>
+</div>
+<!-- TAB 2 -->
+<div id="p2" class="pn"><div class="cbar" style="margin-bottom:16px"><div class="cg"><label>Entity</label><select id="es" onchange="ED()" style="min-width:300px"></select></div></div><div id="ed"></div></div>
+<!-- TAB 3 -->
+<div id="p3" class="pn"><div id="rcards" class="g4"></div><div class="g2"><div class="cd"><div class="cd-h"><h3>Debt by Region</h3></div><div class="cd-b"><div id="rc1" class="bca"></div></div></div><div class="cd"><div class="cd-h"><h3>Recovery by Region</h3></div><div class="cd-b"><div id="rc2" class="bca"></div></div></div></div><div class="tw"><table><thead><tr><th>Region</th><th class="R">#</th><th class="R">Total Debt</th><th class="R">Payments</th><th class="R">Incentives</th><th class="R">Settled</th><th class="R">Remaining</th><th class="R">Recovery %</th></tr></thead><tbody id="rt"></tbody></table></div></div>
+<!-- TAB 4 -->
+<div id="p4" class="pn"><div class="cd" style="margin-bottom:20px"><div class="cd-h"><h3>Global Scenario Comparison (75% enrollment)</h3></div><div class="cd-b"><div id="gsc" class="scenario-grid"></div></div></div><div class="cd"><div class="cd-h"><h3>Strategic Recommendations</h3></div><div class="cd-b"><ul id="recs" class="rl"></ul></div></div></div>
+<!-- TAB 5: AGREEMENT GENERATOR -->
+<div id="p5" class="pn">
+<div class="cd"><div class="cd-h"><h3>Generate Debt Repayment Agreement</h3></div><div class="cd-b">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+<div class="cg" style="flex-direction:column;align-items:flex-start;gap:4px"><label>Entity</label><select id="ag_entity" onchange="genAgreement()" style="width:100%"></select></div>
+<div class="cg" style="flex-direction:column;align-items:flex-start;gap:4px"><label>Commitment Period</label><select id="ag_commit" onchange="genAgreement()" style="width:100%"><option value="12">12 Months (10% incentive)</option><option value="6">6 Months (7% incentive)</option><option value="3">3 Months (3% incentive)</option><option value="1">1 Month (0.5% incentive)</option></select></div>
+<div class="cg" style="flex-direction:column;align-items:flex-start;gap:4px"><label>MCP Name</label><input type="text" id="ag_mcp" placeholder="e.g. Alejandra Ruiz" oninput="genAgreement()" style="width:100%"></div>
+<div class="cg" style="flex-direction:column;align-items:flex-start;gap:4px"><label>MCVP Finance Name</label><input type="text" id="ag_mcvp" placeholder="e.g. Emiliano Rivera" oninput="genAgreement()" style="width:100%"></div>
+</div>
+<button class="btn-gen" onclick="window.print()">Print / Save as PDF</button>
 </div></div>
-<div class="g2">
-<div class="cd"><div class="cd-h"><h3>Monthly Collections Forecast</h3></div><div class="cd-b"><div id="c1" class="bca"></div></div></div>
-<div class="cd"><div class="cd-h"><h3>Cumulative Recovered</h3></div><div class="cd-b"><div id="c2" class="bca"></div></div></div>
-</div>
-<div class="tw"><table><thead><tr>
-<th>Tier</th><th>Region</th><th>ISO</th><th>Entity</th><th class="R">Debt</th><th>Plan</th><th class="R">12mo Target</th><th class="R">Monthly ~</th><th class="R">Incentive</th><th class="R">12mo Paid</th><th style="min-width:90px">Progress</th><th class="R">Remaining</th>
-</tr></thead><tbody id="tb"></tbody></table></div>
+<div id="agPreview"></div>
 </div>
 
-<div id="p2" class="pn">
-<div class="cbar" style="margin-bottom:16px"><div class="cg"><label>Entity</label><select id="es" onchange="ED()" style="min-width:300px"></select></div></div>
-<div id="ed"></div>
-</div>
-
-<div id="p3" class="pn"><div id="rcards" class="g4"></div>
-<div class="g2"><div class="cd"><div class="cd-h"><h3>Debt by Region</h3></div><div class="cd-b"><div id="rc1" class="bca"></div></div></div><div class="cd"><div class="cd-h"><h3>12mo Recovery by Region</h3></div><div class="cd-b"><div id="rc2" class="bca"></div></div></div></div>
-<div class="tw"><table><thead><tr><th>Region</th><th class="R">#</th><th class="R">Total Debt</th><th class="R">12mo Recovery</th><th class="R">Incentives</th><th class="R">Remaining</th><th class="R">Recovery %</th></tr></thead><tbody id="rt"></tbody></table></div>
-</div>
-
-<div id="p4" class="pn">
-<div id="scards" class="sg"></div>
-<div class="cd"><div class="cd-h"><h3>Strategic Recommendations</h3></div><div class="cd-b"><ul id="recs" class="rl"></ul></div></div>
-</div>
-
-<div class="ft"><b>IBDRS Tiered Payment Paths:</b> Tier A/B entities enter structured long-term plans (40-60% target in 12mo) with remaining balance rolling to next MC term under continued monitoring. Tier C targets 80% in 9 months. Tier D/E entities settle fully within 3-6 months using standard IBDRS milestones. <b>Max incentive per tier:</b> A=4%, B=6%, C=8%, D/E=10%. All incentives verified by AI Finance. GAF compliance required throughout.</div>
+<div class="ft"><b>IBDRS Incentive Rates:</b> 1 month = 0.5% | 3 months = 3% | 6 months = 7% | 12 months = 10% (max). Incentive applied only after completing the full committed period. Monthly installments based on tier capacity. GAF compliance required. One-time per MC term. Verified by AI Finance.</div>
 </div>
 
 <script>
 const D=[{"r":"AP","i":"CHN","n":"Mainland of China","d":254361.26},{"r":"Europe","i":"DEU","n":"Germany","d":161152.03},{"r":"AP","i":"VNM","n":"Vietnam","d":89399.06},{"r":"Americas","i":"BRA","n":"Brazil","d":70041.67},{"r":"Europe","i":"GBR","n":"United Kingdom","d":47284.88},{"r":"Americas","i":"MEX","n":"Mexico","d":37291.51},{"r":"Europe","i":"CHE","n":"Switzerland","d":35042.73},{"r":"Americas","i":"CAN","n":"Canada","d":33589.61},{"r":"Europe","i":"ESP","n":"Spain","d":30681.80},{"r":"MEA","i":"KEN","n":"Kenya","d":26090.86},{"r":"AP","i":"AUS","n":"Australia","d":25900.35},{"r":"Europe","i":"NOR","n":"Norway","d":25287.88},{"r":"Europe","i":"AUT","n":"Austria","d":23581.62},{"r":"Americas","i":"ECU","n":"Ecuador","d":23000.88},{"r":"Americas","i":"USA","n":"United States","d":22194.16},{"r":"Europe","i":"POL","n":"Poland","d":22098.99},{"r":"AP","i":"THA","n":"Thailand","d":21993.44},{"r":"Americas","i":"COL","n":"Colombia","d":18565.80},{"r":"MEA","i":"MAR","n":"Morocco","d":18266.41},{"r":"AP","i":"KOR","n":"Korea","d":18208.18},{"r":"Europe","i":"FIN","n":"Finland","d":17583.28},{"r":"MEA","i":"UGA","n":"Uganda","d":17319.44},{"r":"Europe","i":"CZE","n":"Czech Republic","d":15953.44},{"r":"Europe","i":"FRA","n":"France","d":12147.32},{"r":"AP","i":"BGD","n":"Bangladesh","d":10742.09},{"r":"AP","i":"HKG","n":"Hong Kong","d":9957.97},{"r":"MEA","i":"ARE","n":"United Arab Emirates","d":9485.47},{"r":"MEA","i":"DZA","n":"Algeria","d":9219.57},{"r":"AP","i":"SGP","n":"Singapore","d":8512.29},{"r":"MEA","i":"MOZ","n":"Mozambique","d":7755.64},{"r":"MEA","i":"ZAF","n":"South Africa","d":7561.71},{"r":"Europe","i":"ITA","n":"Italy","d":7216.19},{"r":"MEA","i":"TZA","n":"Tanzania","d":7121.69},{"r":"Americas","i":"GTM","n":"Guatemala","d":6363.62},{"r":"Europe","i":"RUS","n":"Russia","d":5601.89},{"r":"MEA","i":"GHA","n":"Ghana","d":5255.47},{"r":"Europe","i":"SWE","n":"Sweden","d":4482.36},{"r":"AP","i":"TWN","n":"Taiwan","d":4438.06},{"r":"Americas","i":"DOM","n":"Dominican Republic","d":4224.06},{"r":"Americas","i":"PER","n":"Peru","d":4198.43},{"r":"Europe","i":"PRT","n":"Portugal","d":3671.12},{"r":"Europe","i":"GRC","n":"Greece","d":3451.17},{"r":"Europe","i":"DNK","n":"Denmark","d":3289.92},{"r":"MEA","i":"LBR","n":"Liberia","d":3238.94},{"r":"Europe","i":"SVK","n":"Slovakia","d":3193.61},{"r":"AP","i":"LKA","n":"Sri Lanka","d":3191.97},{"r":"MEA","i":"BHR","n":"Bahrain","d":3029.96},{"r":"Europe","i":"KGZ","n":"Kyrgyzstan","d":2914.11},{"r":"Americas","i":"NIC","n":"Nicaragua","d":2873.61},{"r":"MEA","i":"CMR","n":"Cameroon","d":2716.94},{"r":"Americas","i":"ARG","n":"Argentina","d":2665.30},{"r":"AP","i":"IND","n":"India","d":2559.86},{"r":"Europe","i":"ALB","n":"Albania","d":2405.20},{"r":"AP","i":"MNG","n":"Mongolia","d":2239.67},{"r":"MEA","i":"TGO","n":"Togo","d":2012.84},{"r":"Americas","i":"CHL","n":"Chile","d":2011.45},{"r":"Europe","i":"MDA","n":"Moldova","d":1833.57},{"r":"Europe","i":"BGR","n":"Bulgaria","d":1747.73},{"r":"Americas","i":"BOL","n":"Bolivia","d":1636.38},{"r":"Europe","i":"LTU","n":"Lithuania","d":1276.42},{"r":"MEA","i":"MWI","n":"Malawi","d":1231.10},{"r":"Europe","i":"NLD","n":"The Netherlands","d":1121.36},{"r":"MEA","i":"ETH","n":"Ethiopia","d":1087.22},{"r":"Americas","i":"VEN","n":"Venezuela","d":927.15},{"r":"Europe","i":"KAZ","n":"Kazakhstan","d":920.66},{"r":"AP","i":"NZL","n":"New Zealand","d":891.48},{"r":"MEA","i":"BEN","n":"Benin","d":634.26},{"r":"Europe","i":"EST","n":"Estonia","d":577.91},{"r":"Europe","i":"GEO","n":"Georgia","d":391.40},{"r":"Europe","i":"MNE","n":"Montenegro","d":344.75},{"r":"Americas","i":"CRI","n":"Costa Rica","d":252.02},{"r":"AP","i":"PAK","n":"Pakistan","d":247.41},{"r":"Europe","i":"ROU","n":"Romania","d":176.42},{"r":"Europe","i":"LVA","n":"Latvia","d":167.68},{"r":"MEA","i":"BFA","n":"Burkina Faso","d":134.79},{"r":"MEA","i":"SEN","n":"Senegal","d":99.62},{"r":"Europe","i":"ARM","n":"Armenia","d":94.66},{"r":"Europe","i":"HRV","n":"Croatia","d":30.81},{"r":"MEA","i":"CIV","n":"Cote D'Ivoire","d":1.33},{"r":"AP","i":"IDN","n":"Indonesia","d":0.90},{"r":"AP","i":"JPN","n":"Japan","d":0.01}];
 const ML=['Jul','Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun'];
 const MF=['Jul 2026','Aug 2026','Sep 2026','Oct 2026','Nov 2026','Dec 2026','Jan 2027','Feb 2027','Mar 2027','Apr 2027','May 2027','Jun 2027'];
+const MFULL=['July 2026','August 2026','September 2026','October 2026','November 2026','December 2026','January 2027','February 2027','March 2027','April 2027','May 2027','June 2027'];
 const RC={AP:'var(--teal)',Europe:'var(--purple)',Americas:'var(--blue)',MEA:'var(--orange)'};
-
+const CM={1:{m:1,inc:.005,label:'1 Month',color:'var(--yellow)'},3:{m:3,inc:.03,label:'3 Months',color:'var(--orange)'},6:{m:6,inc:.07,label:'6 Months',color:'var(--blue)'},12:{m:12,inc:.10,label:'12 Months',color:'var(--green)'}};
 function tier(d){if(d>100000)return'A';if(d>25000)return'B';if(d>10000)return'C';if(d>3000)return'D';return'E'}
-function tierInfo(t){
-  return{
-    A:{label:'>$100K Critical',targetPct:.40,months:12,maxInc:.04,m1Pct:.10,planDesc:'12-month plan: 40% target',color:'var(--red)'},
-    B:{label:'$25K-$100K High',targetPct:.60,months:12,maxInc:.06,m1Pct:.15,planDesc:'12-month plan: 60% target',color:'var(--orange)'},
-    C:{label:'$10K-$25K Medium',targetPct:.80,months:9,maxInc:.08,m1Pct:.20,planDesc:'9-month plan: 80% target',color:'#b8860b'},
-    D:{label:'$3K-$10K Low',targetPct:1.0,months:6,maxInc:.10,m1Pct:.30,planDesc:'6-month plan: full settlement',color:'var(--blue)'},
-    E:{label:'<$3K Quick Win',targetPct:1.0,months:3,maxInc:.10,m1Pct:.50,planDesc:'1-3 month full settlement',color:'var(--green)'}
-  }[t];
-}
+const TP={A:{l:'>$100K',mp:.025},B:{l:'$25K-$100K',mp:.04},C:{l:'$10K-$25K',mp:.06},D:{l:'$3K-$10K',mp:.10},E:{l:'<$3K',mp:.40}};
 
-function calcEntity(e,enrolled){
-  const t=tier(e.d),ti=tierInfo(t);
-  if(!enrolled)return{tier:t,ti,pay:Array(12).fill(0),inc:0,paid:0,rem:e.d,target:0,monthly:0,schedule:[]};
-  const target=e.d*ti.targetPct;
-  const m1=e.d*ti.m1Pct;
-  const remaining_after_m1=target-m1;
-  const spread_months=Math.max(1,ti.months-1);
-  const monthly=remaining_after_m1/spread_months;
-  
-  let pay=Array(12).fill(0);
-  pay[0]=m1;
-  for(let m=1;m<ti.months&&m<12;m++)pay[m]=monthly;
-  
-  const totalPaid=pay.reduce((a,v)=>a+v,0);
-  const inc=Math.min(totalPaid*ti.maxInc/(ti.targetPct),e.d*ti.maxInc);
-  const rem=Math.max(0,e.d-totalPaid-inc);
-  
-  // Build schedule
-  let schedule=[],bal=e.d;
-  const incPerMilestone=inc/Math.min(ti.months,4);
+function calc(e,cm,en){
+  const d=e.d,t=tier(d),ti=TP[t],c=CM[cm];
+  if(!en)return{tier:t,ti,cm:c,monthly:0,pays:Array(12).fill(0),tp:0,inc:0,settled:0,rem:d,sched:[]};
+  const monthly=d*ti.mp;
+  let pays=Array(12).fill(0);
+  for(let m=0;m<cm&&m<12;m++)pays[m]=monthly;
+  const tp=pays.reduce((a,v)=>a+v,0);
+  const inc=d*c.inc;
+  const settled=Math.min(d,tp+inc);
+  const rem=Math.max(0,d-settled);
+  let sched=[],bal=d;
   for(let m=0;m<12;m++){
-    let incThisMonth=0;
-    if(t==='E'){if(m===0)incThisMonth=inc;}
-    else if(t==='D'){if(m===0||m===2||m===5)incThisMonth=inc/3;}
-    else{
-      if(m===0)incThisMonth=inc*.2;
-      else if(m===Math.floor(ti.months/3))incThisMonth=inc*.3;
-      else if(m===Math.floor(ti.months*2/3))incThisMonth=inc*.5;
-    }
-    incThisMonth=Math.min(incThisMonth,bal-pay[m]);
-    if(incThisMonth<0)incThisMonth=0;
-    bal=Math.max(0,bal-pay[m]-incThisMonth);
-    schedule.push({month:MF[m],payment:pay[m],incentive:incThisMonth,balance:bal});
+    let im=m===cm-1?inc:0;
+    bal=Math.max(0,bal-pays[m]-im);
+    sched.push({month:MF[m],monthFull:MFULL[m],pay:pays[m],inc:im,bal,active:m<cm});
   }
-  
-  return{tier:t,ti,pay,inc,paid:totalPaid,rem,target,monthly,schedule};
+  return{tier:t,ti,cm:c,monthly,pays,tp,inc,settled,rem,sched};
 }
-
 function f$(n){return'$'+Math.round(n).toLocaleString('en-US')}
+function f$2(n){return'CAD '+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
 function fp(n){return(n*100).toFixed(1)+'%'}
-
-function getF(){
-  const rg=document.getElementById('rf').value,tf=document.getElementById('tf').value,q=document.getElementById('q').value.toLowerCase();
-  return D.filter(e=>(rg==='All'||e.r===rg)&&(tf==='All'||tier(e.d)===tf)&&(!q||e.n.toLowerCase().includes(q)||e.i.toLowerCase().includes(q)));
-}
+function numWords(n){/* simplified */const o=['','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'];if(n<=12)return o[n];return n.toString();}
+function getF(){const rg=document.getElementById('rf').value,q=document.getElementById('q').value.toLowerCase();return D.filter(e=>(rg==='All'||e.r===rg)&&(!q||e.n.toLowerCase().includes(q)||e.i.toLowerCase().includes(q)))}
 
 function R(){
-  const er=+document.getElementById('er').value,f=getF();
+  const er=+document.getElementById('er').value,cm=+document.getElementById('cm').value,f=getF();
   let tD=0,tP=0,tI=0,tR=0,en=0,mc=Array(12).fill(0),rows=[];
-  f.forEach((e,i)=>{
-    const enrolled=i<Math.round(f.length*er);
-    const r=calcEntity(e,enrolled);
-    tD+=e.d;tP+=r.paid;tI+=r.inc;tR+=r.rem;if(enrolled)en++;
-    r.pay.forEach((v,m)=>{mc[m]+=v});
-    rows.push({...e,res:r,enrolled});
-  });
-
+  f.forEach((e,i)=>{const enrolled=i<Math.round(f.length*er);const r=calc(e,cm,enrolled);tD+=e.d;tP+=r.tp;tI+=r.inc;tR+=r.rem;if(enrolled)en++;r.pays.forEach((v,m)=>{mc[m]+=v});rows.push({...e,res:r,enrolled})});
   document.getElementById('kpis').innerHTML=`
-<div class="kpi"><div class="kpi-bar" style="background:var(--red)"></div><div class="kpi-lb">Total Debt</div><div class="kpi-v" style="color:var(--red)">${f$(tD)}</div><div class="kpi-s">${f.length} entities across 5 tiers</div></div>
-<div class="kpi"><div class="kpi-bar" style="background:var(--blue)"></div><div class="kpi-lb">Enrolled</div><div class="kpi-v" style="color:var(--blue)">${en}</div><div class="kpi-s">${fp(en/f.length)} enrollment rate</div></div>
-<div class="kpi"><div class="kpi-bar" style="background:var(--green)"></div><div class="kpi-lb">12mo Recovery</div><div class="kpi-v" style="color:var(--green)">${f$(tP+tI)}</div><div class="kpi-s">${fp((tP+tI)/tD)} of debt (payments + incentives)</div></div>
-<div class="kpi"><div class="kpi-bar" style="background:var(--orange)"></div><div class="kpi-lb">Incentive Cost</div><div class="kpi-v" style="color:var(--orange)">${f$(tI)}</div><div class="kpi-s">${fp(tI/tD)} of total debt</div></div>
-<div class="kpi"><div class="kpi-bar" style="background:var(--teal)"></div><div class="kpi-lb">Remaining (rolls over)</div><div class="kpi-v" style="color:var(--teal)">${f$(tR)}</div><div class="kpi-s">${fp(tR/tD)} to next MC term</div></div>`;
-
-  // Table
-  let h='';
-  rows.forEach(r=>{
-    const e=r.res,pg=r.enrolled?(e.paid+e.inc)/r.d:0;
-    h+=`<tr>
-<td><span class="tier tier-${e.tier}">${e.tier}</span></td>
-<td><span class="rg rg-${r.r}">${r.r}</span></td>
-<td class="M">${r.i}</td>
-<td style="font-weight:600;font-size:11px">${r.n}</td>
-<td class="R M" style="color:var(--red)">${f$(r.d)}</td>
-<td style="font-size:10px;color:var(--t2)">${r.enrolled?e.ti.planDesc:'Not enrolled'}</td>
-<td class="R M">${r.enrolled?f$(r.d*e.ti.targetPct):'—'}</td>
-<td class="R M">${r.enrolled&&e.monthly>0?f$(e.monthly)+'/mo':'—'}</td>
-<td class="R"><span class="ic">${r.enrolled?f$(e.inc):'—'}</span></td>
-<td class="R M pos">${r.enrolled?f$(e.paid+e.inc):'—'}</td>
-<td><div class="prog"><div class="prog-f" style="width:${pg*100}%;background:${e.ti.color}"></div></div></td>
-<td class="R M ${e.rem>0?'neg':'pos'}">${f$(e.rem)}</td></tr>`;
-  });
-  // Totals
-  h+=`<tr class="total-row"><td colspan="4"><b>${f.length} entities</b></td><td class="R M"><b>${f$(tD)}</b></td><td></td><td></td><td></td><td class="R"><span class="ic">${f$(tI)}</span></td><td class="R M pos"><b>${f$(tP+tI)}</b></td><td></td><td class="R M"><b>${f$(tR)}</b></td></tr>`;
+<div class="kpi"><div class="kpi-bar" style="background:var(--red)"></div><div class="kpi-lb">Total Debt</div><div class="kpi-v" style="color:var(--red)">${f$(tD)}</div><div class="kpi-s">${f.length} entities</div></div>
+<div class="kpi"><div class="kpi-bar" style="background:var(--blue)"></div><div class="kpi-lb">Enrolled</div><div class="kpi-v" style="color:var(--blue)">${en}</div><div class="kpi-s">${fp(en/f.length)} rate</div></div>
+<div class="kpi"><div class="kpi-bar" style="background:var(--green)"></div><div class="kpi-lb">Total Settled</div><div class="kpi-v" style="color:var(--green)">${f$(tP+tI)}</div><div class="kpi-s">${fp((tP+tI)/tD)} recovered</div></div>
+<div class="kpi"><div class="kpi-bar" style="background:var(--orange)"></div><div class="kpi-lb">Incentive Cost</div><div class="kpi-v" style="color:var(--orange)">${f$(tI)}</div><div class="kpi-s">${fp(tI/tD)} of debt</div></div>
+<div class="kpi"><div class="kpi-bar" style="background:var(--teal)"></div><div class="kpi-lb">Remaining</div><div class="kpi-v" style="color:${tR>0?'var(--red)':'var(--green)'}">${f$(tR)}</div><div class="kpi-s">${fp(tR/tD)} rolls over</div></div>`;
+  let h='';rows.forEach(r=>{const e=r.res,pg=r.enrolled?e.settled/r.d:0;
+  h+=`<tr><td><span class="tier tier-${e.tier}">${e.tier}</span></td><td><span class="rg rg-${r.r}">${r.r}</span></td><td class="M">${r.i}</td><td style="font-weight:600;font-size:11px">${r.n}</td><td class="R M neg">${f$(r.d)}</td><td class="R M">${r.enrolled?f$(e.monthly)+'/mo':'—'}</td><td style="font-size:10px">${r.enrolled?'<span style="color:'+e.cm.color+';font-weight:700">'+e.cm.label+'</span> → '+fp(e.cm.inc):'Not enrolled'}</td><td class="R M">${r.enrolled?f$(e.tp):'—'}</td><td class="R"><span class="ic">${r.enrolled?f$(e.inc):'—'}</span></td><td class="R M pos">${r.enrolled?f$(e.settled):'—'}</td><td><div class="prog"><div class="prog-f" style="width:${pg*100}%;background:${e.cm.color}"></div></div></td><td class="R M ${e.rem>0?'neg':'pos'}">${f$(e.rem)}</td></tr>`});
+  h+=`<tr class="total-row"><td colspan="4"><b>${f.length} entities</b></td><td class="R M"><b>${f$(tD)}</b></td><td colspan="2"></td><td class="R M"><b>${f$(tP)}</b></td><td class="R"><span class="ic">${f$(tI)}</span></td><td class="R M pos"><b>${f$(tP+tI)}</b></td><td></td><td class="R M"><b>${f$(tR)}</b></td></tr>`;
   document.getElementById('tb').innerHTML=h;
-
-  BC('c1',ML,mc,'var(--blue)');let cm=[],c=0;mc.forEach(v=>{c+=v;cm.push(c)});BC('c2',ML,cm,'var(--green)');
-  renderReg(rows);renderStrat();popES();
+  BC('c1',ML,mc,'var(--blue)');let cum=[],c=0;mc.forEach(v=>{c+=v;cum.push(c)});BC('c2',ML,cum,'var(--green)');
+  renderReg(rows);renderStrat();popES();popAG();
 }
-
 function BC(id,lb,vl,co){const mx=Math.max(...vl,1);document.getElementById(id).innerHTML=lb.map((l,i)=>`<div class="bc"><div class="bs" style="height:${Math.max(2,(vl[i]/mx)*150)}px;background:${co}" data-t="${f$(vl[i])}"></div><div class="bm">${l}</div></div>`).join('')}
+function renderReg(rows){const rg={};rows.forEach(r=>{if(!rg[r.r])rg[r.r]={c:0,d:0,p:0,inc:0,rem:0};const g=rg[r.r];g.c++;g.d+=r.d;g.p+=r.res.tp;g.inc+=r.res.inc;g.rem+=r.res.rem});const s=Object.entries(rg).sort((a,b)=>b[1].d-a[1].d);let cards='',tbl='';
+s.forEach(([n,r])=>{const fn=n==='AP'?'Asia Pacific':n==='MEA'?'Middle East & Africa':n;
+cards+=`<div class="rc" style="border-top-color:${RC[n]}"><h4><span class="rg rg-${n}">${n}</span>${fn}</h4><div class="rs"><span>Entities</span><span>${r.c}</span></div><div class="rs"><span>Total Debt</span><span class="neg">${f$(r.d)}</span></div><div class="rs"><span>Payments</span><span class="pos">${f$(r.p)}</span></div><div class="rs"><span>Recovery</span><span class="blu">${fp((r.p+r.inc)/r.d)}</span></div></div>`;
+tbl+=`<tr><td><span class="rg rg-${n}">${fn}</span></td><td class="R M">${r.c}</td><td class="R M neg">${f$(r.d)}</td><td class="R M pos">${f$(r.p)}</td><td class="R M org">${f$(r.inc)}</td><td class="R M pos">${f$(r.p+r.inc)}</td><td class="R M neg">${f$(r.rem)}</td><td class="R M blu">${fp((r.p+r.inc)/r.d)}</td></tr>`});
+document.getElementById('rcards').innerHTML=cards;document.getElementById('rt').innerHTML=tbl;BC('rc1',s.map(x=>x[0]),s.map(x=>x[1].d),'var(--red)');BC('rc2',s.map(x=>x[0]),s.map(x=>x[1].p+x[1].inc),'var(--green)')}
+function renderStrat(){const td=D.reduce((a,e)=>a+e.d,0);let gsc='';
+[1,3,6,12].forEach(cm=>{const c=CM[cm];let p=0,inc=0;D.forEach((e,i)=>{const en=i<Math.round(D.length*.75);const r=calc(e,cm,en);p+=r.tp;inc+=r.inc});const best=cm===12;
+gsc+=`<div class="scenario-card${best?' best':''}" style="border-color:${c.color}"><h4 style="color:${c.color}">${c.label}</h4><div class="sp">${fp(c.inc)} incentive</div><div class="sv" style="color:${c.color}">${f$(p+inc)}</div><div style="font-size:10px;color:var(--t3)">of ${f$(td)}</div><div class="sd">Payments: <b>${f$(p)}</b><br>Incentive: <b>${f$(inc)}</b><br>Recovery: <b>${fp((p+inc)/td)}</b><br>Remain: <b class="neg">${f$(td-p-inc)}</b></div>${best?'<div style="margin-top:6px;font-size:9px;font-weight:700;color:var(--green)">★ BEST VALUE</div>':''}</div>`});
+document.getElementById('gsc').innerHTML=gsc;
+document.getElementById('recs').innerHTML=`
+<li class="ri" style="border-color:var(--green)"><strong>1. Push 12-Month for Tier A/B — They Save the Most</strong>China saves ${f$(254361*.10)} at 12mo vs only ${f$(254361*.005)} at 1mo. Show entities the 4-scenario comparison — the difference sells itself.</li>
+<li class="ri" style="border-color:var(--blue)"><strong>2. 6-Month Sweet Spot for Tier C ($10K-$25K)</strong>13 entities can settle 70%+ in 6 months with 7% incentive. Monthly payments of $600-$1,400 are manageable.</li>
+<li class="ri" style="border-color:var(--orange)"><strong>3. Quick Wins: 1-3 Month for Tier E (<$3K)</strong>34 entities under $3K — many settle fully in 1-3 months even with the smaller 0.5-3% incentive.</li>
+<li class="ri" style="border-color:var(--purple)"><strong>4. Use the Agreement Generator</strong>Go to the "Generate Agreement" tab, select any entity, fill in MCP/MCVP names, and print a ready-to-sign PDF matching the official AIESEC template.</li>
+<li class="ri" style="border-color:var(--red)"><strong>5. No Partial Credit — Complete or Forfeit</strong>Incentive earned ONLY after completing the full committed period. Entity commits to 6mo but stops at month 4 = 0% incentive.</li>
+<li class="ri" style="border-color:var(--teal)"><strong>6. Tie to GAF Benefits</strong>Entities in active 6+ month IBDRS plans get GAF calculated at IPM for budget certainty.</li>`}
+function popES(){const sel=document.getElementById('es'),cur=sel.value;sel.innerHTML=D.map(e=>`<option value="${e.i}" ${e.i===cur?'selected':''}>${e.i} — ${e.n} (${f$(e.d)})</option>`).join('');ED()}
+function ED(){const iso=document.getElementById('es').value,e=D.find(x=>x.i===iso);if(!e)return;const t=tier(e.d),ti=TP[t],selCm=+document.getElementById('cm').value,main=calc(e,selCm,true);
+let scenarios=[1,3,6,12].map(cm=>({cm,...CM[cm],r:calc(e,cm,true)}));
+document.getElementById('ed').innerHTML=`
+<div class="eh"><div class="eh-top"><h2>${e.n}</h2><span class="rg rg-${e.r}" style="font-size:11px;padding:4px 12px">${e.r}</span><span class="tier tier-${t}" style="font-size:11px;padding:4px 12px">Tier ${t}: ${ti.l}</span></div>
+<div class="ek"><div class="ek-i"><div class="ek-l">Total Debt</div><div class="ek-v neg">${f$(e.d)}</div></div><div class="ek-i"><div class="ek-l">Monthly Payment</div><div class="ek-v blu">${f$(e.d*ti.mp)}/mo</div></div><div class="ek-i"><div class="ek-l">Selected: ${CM[selCm].label}</div><div class="ek-v org">${fp(CM[selCm].inc)} incentive</div></div><div class="ek-i"><div class="ek-l">Remaining</div><div class="ek-v" style="color:${main.rem>0?'var(--red)':'var(--green)'}">${f$(main.rem)}</div></div></div></div>
+<div class="cd" style="margin-bottom:18px"><div class="cd-h"><h3>Compare All 4 Commitment Options</h3></div><div class="cd-b"><div class="scenario-grid">${scenarios.map(s=>{const best=s.cm===12;return`<div class="scenario-card${best?' best':''}" style="border-color:${s.color}"><h4 style="color:${s.color}">${s.label}</h4><div class="sp">${fp(s.inc)} off</div><div style="font-family:'IBM Plex Mono';font-size:14px;font-weight:700;color:${s.color}">${f$(s.r.settled)} settled</div><div class="sd">Monthly: <b>${f$(s.r.monthly)}</b><br>Payments: <b>${f$(s.r.tp)}</b><br>Incentive: <b class="pos">${f$(s.r.inc)}</b><br>Remain: <b class="${s.r.rem>0?'neg':'pos'}">${f$(s.r.rem)}</b>${s.r.rem>0?'<br><span style="font-size:9px;color:var(--t3)">→ next term</span>':'<br><span style="font-size:9px;color:var(--green);font-weight:700">✓ SETTLED</span>'}</div>${best?'<div style="margin-top:6px;font-size:9px;font-weight:700;color:var(--green)">★ BEST</div>':''}</div>`}).join('')}</div></div></div>
+<div class="cd"><div class="cd-h"><h3>Payment Schedule — ${CM[selCm].label}</h3></div><div class="cd-b" style="padding:0"><div class="tw" style="border:none;box-shadow:none"><table><thead><tr><th>Month</th><th class="R">Payment</th><th class="R">Incentive</th><th class="R">Cumulative</th><th class="R">Balance</th><th>Status</th></tr></thead><tbody>
+<tr style="background:var(--surface)"><td style="font-weight:600">Opening</td><td class="R">—</td><td class="R">—</td><td class="R M">$0</td><td class="R M neg">${f$(e.d)}</td><td>—</td></tr>
+${main.sched.map((s,i)=>{const cum=e.d-s.bal;return`<tr${!s.active&&s.pay<.5?' style="opacity:.4"':''}>
+<td style="font-weight:${s.active?'600':'400'}">${s.month}${s.inc>0?' <span style="font-size:9px;color:var(--green)">(INCENTIVE)</span>':''}</td>
+<td class="R M ${s.pay>.5?'pos':''}">${s.pay>.5?f$(s.pay):'—'}</td>
+<td class="R M ${s.inc>.5?'org':''}">${s.inc>.5?f$(s.inc):'—'}</td>
+<td class="R M blu">${f$(cum)}</td>
+<td class="R M ${s.bal>.5?'neg':'pos'}">${f$(s.bal)}</td>
+<td style="font-size:10px">${s.bal<.5?'<b class="pos">✓ SETTLED</b>':s.active?'<span class="blu">Active</span>':'—'}</td></tr>`}).join('')}
+</tbody></table></div></div></div>`}
 
-function renderReg(rows){
-  const rg={};rows.forEach(r=>{if(!rg[r.r])rg[r.r]={c:0,d:0,p:0,inc:0,rem:0,mx:null,mxd:0};const g=rg[r.r];g.c++;g.d+=r.d;g.p+=r.res.paid;g.inc+=r.res.inc;g.rem+=r.res.rem;if(r.d>g.mxd){g.mxd=r.d;g.mx=r.n}});
-  const s=Object.entries(rg).sort((a,b)=>b[1].d-a[1].d);
-  let cards='',tbl='';
-  s.forEach(([n,r])=>{const fn=n==='AP'?'Asia Pacific':n==='MEA'?'Middle East & Africa':n;
-  cards+=`<div class="rc" style="border-top-color:${RC[n]}"><h4><span class="rg rg-${n}">${n}</span>${fn}</h4><div class="rs"><span>Entities</span><span>${r.c}</span></div><div class="rs"><span>Total Debt</span><span style="color:var(--red)">${f$(r.d)}</span></div><div class="rs"><span>12mo Recovery</span><span class="pos">${f$(r.p+r.inc)}</span></div><div class="rs"><span>Recovery Rate</span><span class="blu">${fp((r.p+r.inc)/r.d)}</span></div><div class="rs"><span>Remaining</span><span class="neg">${f$(r.rem)}</span></div></div>`;
-  tbl+=`<tr><td><span class="rg rg-${n}">${fn}</span></td><td class="R M">${r.c}</td><td class="R M neg">${f$(r.d)}</td><td class="R M pos">${f$(r.p+r.inc)}</td><td class="R M org">${f$(r.inc)}</td><td class="R M neg">${f$(r.rem)}</td><td class="R M blu">${fp((r.p+r.inc)/r.d)}</td></tr>`});
-  document.getElementById('rcards').innerHTML=cards;document.getElementById('rt').innerHTML=tbl;
-  BC('rc1',s.map(x=>x[0]==='AP'?'AP':x[0]==='MEA'?'MEA':x[0]),s.map(x=>x[1].d),'var(--red)');
-  BC('rc2',s.map(x=>x[0]==='AP'?'AP':x[0]==='MEA'?'MEA':x[0]),s.map(x=>x[1].p+x[1].inc),'var(--green)');
-}
+// ===== AGREEMENT GENERATOR =====
+function popAG(){const sel=document.getElementById('ag_entity'),cur=sel.value;sel.innerHTML=D.map(e=>`<option value="${e.i}" ${e.i===cur?'selected':''}>${e.i} — ${e.n} (${f$2(e.d)})</option>`).join('');genAgreement()}
 
-function renderStrat(){
-  const td=D.reduce((a,e)=>a+e.d,0);
-  const sc=[
-    {nm:'Optimistic',ds:'100% enroll',er:1,co:'var(--green)',bg:'rgba(0,193,110,.05)'},
-    {nm:'Base Case',ds:'75% enroll',er:.75,co:'var(--blue)',bg:'rgba(3,126,243,.05)'},
-    {nm:'Conservative',ds:'50% enroll',er:.5,co:'var(--orange)',bg:'rgba(244,137,36,.05)'}
-  ];
-  let h='';
-  sc.forEach(s=>{let p=0,inc=0;D.forEach((e,i)=>{const en=i<Math.round(D.length*s.er);const r=calcEntity(e,en);p+=r.paid;inc+=r.inc});
-  h+=`<div class="sc" style="border-top-color:${s.co};background:${s.bg}"><h4 style="color:${s.co}">${s.nm}</h4><div class="pm">${s.ds}</div><div class="bn" style="color:${s.co}">${f$(p+inc)}</div><div style="font-size:10px;color:var(--t3);margin-top:3px">of ${f$(td)} total debt</div><div class="dt">Payments: <b>${f$(p)}</b><br>Incentives: <b>${f$(inc)}</b><br>Recovery: <b style="color:${s.co}">${fp((p+inc)/td)}</b><br>Rolls to next term: <b class="neg">${f$(td-p-inc)}</b></div></div>`});
-  document.getElementById('scards').innerHTML=h;
-
-  document.getElementById('recs').innerHTML=`
-<li class="ri" style="border-color:var(--red)"><strong>1. Tier A: Negotiate Long-Term Plans with China & Germany</strong>These 2 entities alone owe $415K (33% of all debt). A 40% recovery target over 12 months collects ~$166K. Assign VP Finance Sajana directly to negotiate signed repayment agreements with monthly installments of ~$8K-$10K each. Remaining balance rolls to FY26.27 under continued IBDRS monitoring.</li>
-<li class="ri" style="border-color:var(--orange)"><strong>2. Tier B: Structured 60% Plans for 10 High-Debt Entities</strong>Vietnam, Brazil, UK, Mexico, Switzerland, Canada, Spain, Kenya, Australia, Norway together owe $421K. At 60% target, collect ~$252K over 12 months with monthly installments of $1.5K-$4K per entity. These are manageable amounts that won't bankrupt the entities.</li>
-<li class="ri" style="border-color:var(--green)"><strong>3. Tier E "Clean Slate Sprint": Clear 34 Small Debts in Month 1</strong>34 entities owe under $3K each (total $38K). Most can settle in a single payment. Run a 2-week campaign before program launch — this creates network momentum and visible wins. Entities like Croatia ($31), Japan ($0.01), Indonesia ($1) can clear immediately.</li>
-<li class="ri" style="border-color:var(--blue)"><strong>4. Tie Repayment to Distribution Model Benefits</strong>Entities actively enrolled in IBDRS get their GAF calculated at IPM (giving budget certainty) instead of 2.5 months before collection. This directly addresses the #1 network pain point from the FSC survey while incentivizing debt clearance.</li>
-<li class="ri" style="border-color:var(--purple)"><strong>5. Regional VP Tracking via Proud Financier</strong>Add IBDRS enrollment % and payment compliance to the monthly Proud Financier commission call metrics. First region to hit 100% Tier E clearance gets IC recognition. Share success stories in the newsletter to create positive pressure.</li>
-<li class="ri" style="border-color:var(--teal)"><strong>6. Realistic Expectations: ~55-65% Recovery in Year 1</strong>With tiered plans, Year 1 won't clear all debt — and that's by design. The goal is sustainable recovery that doesn't bankrupt entities (Principle #3). Tier A/B entities need 2-3 years to fully settle. The IBDRS creates the accountability framework to make that happen systematically.</li>`;
-}
-
-function popES(){
-  const sel=document.getElementById('es'),cur=sel.value;
-  sel.innerHTML=D.map(e=>`<option value="${e.i}" ${e.i===cur?'selected':''}>${e.i} — ${e.n} (${f$(e.d)}) [Tier ${tier(e.d)}]</option>`).join('');
-  ED();
-}
-
-function ED(){
-  const iso=document.getElementById('es').value,e=D.find(x=>x.i===iso);if(!e)return;
-  const r=calcEntity(e,true),t=r.ti;
+function genAgreement(){
+  const iso=document.getElementById('ag_entity').value;
+  const e=D.find(x=>x.i===iso);if(!e)return;
+  const cm=+document.getElementById('ag_commit').value;
+  const mcp=document.getElementById('ag_mcp').value||'[MCP Name]';
+  const mcvp=document.getElementById('ag_mcvp').value||'[MCVP Finance Name]';
+  const c=CM[cm];const t=tier(e.d);const ti=TP[t];
+  const monthly=e.d*ti.mp;
+  const inc=e.d*c.inc;
+  const tp=monthly*cm;
+  const settled=Math.min(e.d,tp+inc);
+  const rem=Math.max(0,e.d-settled);
+  const today=new Date();
+  const dateStr=today.toLocaleDateString('en-US',{day:'numeric',month:'long',year:'numeric'});
   
-  document.getElementById('ed').innerHTML=`
-<div class="eh"><div class="eh-top"><h2>${e.n}</h2><span class="rg rg-${e.r}" style="font-size:11px;padding:4px 12px">${e.r}</span><span class="tier tier-${r.tier}" style="font-size:11px;padding:4px 12px">Tier ${r.tier}: ${t.label}</span><span class="M" style="color:var(--t3);font-size:13px">${e.i}</span></div>
-<div class="ek">
-<div class="ek-i"><div class="ek-l">Opening Debt</div><div class="ek-v neg">${f$(e.d)}</div></div>
-<div class="ek-i"><div class="ek-l">12-Month Target (${fp(t.targetPct)})</div><div class="ek-v blu">${f$(e.d*t.targetPct)}</div></div>
-<div class="ek-i"><div class="ek-l">Incentive Earned (up to ${fp(t.maxInc)})</div><div class="ek-v org">${f$(r.inc)}</div></div>
-<div class="ek-i"><div class="ek-l">Remaining After 12mo</div><div class="ek-v" style="color:${r.rem>0?'var(--red)':'var(--green)'}">${f$(r.rem)}</div></div>
-</div></div>
+  // Generate installment dates
+  let installments=[];
+  const startDate=new Date(2026,6,1); // Jul 2026
+  for(let m=0;m<cm;m++){
+    const d=new Date(startDate);d.setMonth(d.getMonth()+m);
+    const lastDay=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();
+    const label=d.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+    installments.push({num:m+1,amount:monthly,date:`on/before ${label} ${lastDay}, ${d.getFullYear()}`});
+  }
+  
+  const endDate=installments[installments.length-1]?.date||'';
 
-<div class="pp">
-<b>Payment Path for ${e.n}:</b><br>
-&bull; <b>Plan:</b> ${t.planDesc}<br>
-&bull; <b>Month 1 (upfront):</b> ${f$(e.d*t.m1Pct)} (${fp(t.m1Pct)} of debt)<br>
-&bull; <b>Months 2-${t.months}:</b> ${f$(r.monthly)}/month (${t.months-1} installments)<br>
-&bull; <b>Max incentive:</b> ${fp(t.maxInc)} = ${f$(r.inc)} reduction applied across milestones<br>
-&bull; <b>12-month total settled:</b> ${f$(r.paid+r.inc)} (${fp((r.paid+r.inc)/e.d)} of original debt)<br>
-${r.rem>0?`&bull; <b>Remaining ${f$(r.rem)}</b> rolls to next MC term under continued IBDRS monitoring`:'&bull; <b style="color:var(--green)">Debt fully settled!</b>'}
-</div>
+  document.getElementById('agPreview').innerHTML=`
+<div class="agreement-preview">
+  <h2>AIESEC INTERNATIONAL</h2>
+  <div class="ag-date">${dateStr}</div>
+  
+  <p>AIESEC in ${e.n},</p>
+  
+  <p class="ag-title">AGREEMENT BETWEEN AIESEC INTERNATIONAL (AI) AND AIESEC IN ${e.n.toUpperCase()} (ENTITY)</p>
+  
+  <p>AIESEC in ${e.n}, represented by <b>${mcp}</b>, President, recognizes its balance towards AI of <b>${f$2(e.d)}</b> as of the date of this agreement.</p>
+  
+  <p>Under the IBDRS (Incentive-Based Debt Repayment System), the ENTITY commits to a <b>${c.label.toLowerCase()}</b> repayment plan. Upon successful completion of all ${cm} installment${cm>1?'s':''}, the ENTITY earns an incentive reduction of <b>${fp(c.inc)}</b> on the original debt balance, equivalent to <b>${f$2(inc)}</b>.</p>
 
-<div class="cd"><div class="cd-h"><h3>Month-by-Month Payment Schedule</h3></div><div class="cd-b" style="padding:0">
-<div class="tw" style="border:none;box-shadow:none;max-height:500px"><table>
-<thead><tr><th>Month</th><th class="R">Payment Due</th><th class="R">Incentive</th><th class="R">Total Applied</th><th class="R">Remaining Balance</th><th>Status</th></tr></thead>
-<tbody>
-<tr style="background:var(--surface)"><td style="font-weight:600">Opening Balance</td><td class="R">—</td><td class="R">—</td><td class="R M">$0</td><td class="R M neg">${f$(e.d)}</td><td>—</td></tr>
-${r.schedule.map((s,i)=>{
-  const cumPaid=e.d-s.balance;
-  const isActive=s.payment>0.5;
-  return`<tr${!isActive?' style="opacity:.5"':''}>
-<td style="font-weight:500">${s.month}${i===0?' <span style="font-size:9px;color:var(--orange)">(UPFRONT)</span>':''}</td>
-<td class="R M pos">${s.payment>0.5?f$(s.payment):'—'}</td>
-<td class="R M org">${s.incentive>0.5?f$(s.incentive):'—'}</td>
-<td class="R M blu">${f$(cumPaid)}</td>
-<td class="R M ${s.balance>0.5?'neg':'pos'}">${f$(s.balance)}</td>
-<td style="font-size:10px">${s.balance<0.5?'<span class="pos" style="font-weight:700">SETTLED</span>':i<t.months?'<span style="color:var(--blue)">Active</span>':'<span style="color:var(--t3)">Plan ended</span>'}</td>
-</tr>`}).join('')}
-</tbody></table></div></div></div>`;
-}
+  <p>With this, the <b>ENTITY</b> and <b>AI</b> agree that a total of <b>${f$2(tp)}</b> is to be paid in <b>${cm} installment${cm>1?'s':''}</b>, with an incentive of <b>${f$2(inc)}</b> applied upon completion, settling a total of <b>${f$2(settled)}</b>.${rem>0.5?` The remaining debt of <b>${f$2(rem)}</b> and any additional amounts incurred will be reviewed under an updated repayment plan.`:' This fully settles the outstanding balance.'}</p>
+  
+  <p>The installments are to be paid as follows:</p>
+  ${installments.map(inst=>`<p style="margin:4px 0"><b>Installment ${inst.num}:</b> ${f$2(inst.amount)}, ${inst.date}</p>`).join('')}
+  
+  ${cm>=6?`<p style="margin-top:12px"><b>Incentive Application:</b> Upon verified completion of all ${cm} installments, a reduction of ${f$2(inc)} (${fp(c.inc)} of original debt) will be applied, reducing the total amount owed by this amount.</p>`:''}
+  
+  <p>In case the ENTITY would like to make payments in advance, it will be deducted from the last installment. In case the ENTITY incurs additional fees during this period, they are expected to be paid in a timely manner in addition to this repayment plan.</p>
+  
+  <p>As part of this agreement, the ENTITY commits to collaborate with any Global Partner Delivery activity that would bring revenue sharing. Revenue generated through a Global Partner that AI receives on behalf of the ENTITY will be deducted from the corresponding installment period.</p>
+  
+  <p>The incentive reduction is earned <b>only upon completion of all committed installments</b>. Failure to complete any scheduled payment forfeits the incentive for this program cycle. The ENTITY must remain compliant with all current GAF obligations throughout the program.</p>
+  
+  <p>This agreement shall be reviewed at every International Legislative Meeting until the ENTITY has fully paid its debt.</p>
+  
+  <div class="ag-sig">
+    <div><div class="sig-line"></div><b>${mcp}</b><br>Member Committee President<br>AIESEC in ${e.n}</div>
+    <div><div class="sig-line"></div><b>${mcvp}</b><br>MCVP Finance<br>AIESEC in ${e.n}</div>
+    <div><div class="sig-line"></div><b>[VP Finance Name]</b><br>Vice President — Finance<br>AIESEC International</div>
+  </div>
+</div>`}
 
 function T(id,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.pn').forEach(p=>p.classList.remove('on'));document.getElementById(id).classList.add('on');btn.classList.add('on')}
 R();
