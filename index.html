@@ -91,12 +91,35 @@ table{width:100%;border-collapse:collapse}thead{position:sticky;top:0;z-index:5}
 <button class="tab" onclick="T('p2',this)">Entity Detail</button>
 <button class="tab" onclick="T('p3',this)">Regional</button>
 <button class="tab" onclick="T('p4',this)">Strategy</button>
+<button class="tab" onclick="T('p6',this)" style="background:rgba(117,82,204,.1);color:var(--purple)">Budget Simulator</button>
 <button class="tab" onclick="T('p5',this)" style="background:rgba(0,193,110,.1);color:var(--green)">Generate Agreement</button>
 </div>
 <div id="p1" class="pn on"><div class="g2"><div class="cd"><div class="cd-h"><h3>Monthly Collections</h3></div><div class="cd-b"><div id="c1" class="bca"></div></div></div><div class="cd"><div class="cd-h"><h3>Cumulative Recovered</h3></div><div class="cd-b"><div id="c2" class="bca"></div></div></div></div><div class="cd" style="margin-bottom:20px"><div class="cd-h"><h3>Recovery by Tier</h3></div><div class="cd-b"><div id="tierSum"></div></div></div><div class="tw"><table><thead><tr><th>Tier</th><th>Region</th><th>ISO</th><th>Entity</th><th class="R">Debt</th><th class="R">Monthly</th><th>Commitment</th><th class="R">Payments</th><th class="R">Incentive</th><th class="R">Settled</th><th style="min-width:90px">Progress</th><th class="R">Remaining</th></tr></thead><tbody id="tb"></tbody></table></div></div>
 <div id="p2" class="pn"><div class="cbar" style="margin-bottom:16px"><div class="cg"><label>Entity</label><select id="es" onchange="ED()" style="min-width:300px"></select></div></div><div id="ed"></div></div>
 <div id="p3" class="pn"><div id="rcards" class="g4"></div><div class="g2"><div class="cd"><div class="cd-h"><h3>Debt by Region</h3></div><div class="cd-b"><div id="rc1" class="bca"></div></div></div><div class="cd"><div class="cd-h"><h3>Recovery by Region</h3></div><div class="cd-b"><div id="rc2" class="bca"></div></div></div></div><div class="tw"><table><thead><tr><th>Region</th><th class="R">#</th><th class="R">Total Debt</th><th class="R">Payments</th><th class="R">Incentives</th><th class="R">Settled</th><th class="R">Remaining</th><th class="R">Recovery %</th></tr></thead><tbody id="rt"></tbody></table></div></div>
 <div id="p4" class="pn"><div class="cd" style="margin-bottom:20px"><div class="cd-h"><h3>Global Scenario Comparison (75% enrollment)</h3></div><div class="cd-b"><div id="gsc" class="scenario-grid"></div></div></div><div class="cd"><div class="cd-h"><h3>Strategic Recommendations</h3></div><div class="cd-b"><ul id="recs" class="rl"></ul></div></div></div>
+<div id="p6" class="pn">
+<div class="cd"><div class="cd-h"><h3>Incentive Rate Simulator</h3><span style="font-size:11px;color:var(--t2)">Adjust rates and see impact instantly</span></div><div class="cd-b">
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
+<div style="background:var(--surface);border-radius:var(--rs);padding:14px;text-align:center;border:2px solid var(--yellow)"><div style="font-weight:700;font-size:13px;margin-bottom:6px">1 Month</div><div style="display:flex;align-items:center;justify-content:center;gap:4px"><input type="number" id="sim_1" value="1.5" min="0" max="20" step="0.5" onchange="runSim()" style="width:60px;text-align:center;font-family:'IBM Plex Mono';font-size:16px;font-weight:700;border:2px solid var(--yellow);border-radius:6px;padding:6px;background:#fff"><span style="font-size:14px;font-weight:700">%</span></div></div>
+<div style="background:var(--surface);border-radius:var(--rs);padding:14px;text-align:center;border:2px solid var(--orange)"><div style="font-weight:700;font-size:13px;margin-bottom:6px">3 Months</div><div style="display:flex;align-items:center;justify-content:center;gap:4px"><input type="number" id="sim_3" value="3" min="0" max="20" step="0.5" onchange="runSim()" style="width:60px;text-align:center;font-family:'IBM Plex Mono';font-size:16px;font-weight:700;border:2px solid var(--orange);border-radius:6px;padding:6px;background:#fff"><span style="font-size:14px;font-weight:700">%</span></div></div>
+<div style="background:var(--surface);border-radius:var(--rs);padding:14px;text-align:center;border:2px solid var(--blue)"><div style="font-weight:700;font-size:13px;margin-bottom:6px">6 Months</div><div style="display:flex;align-items:center;justify-content:center;gap:4px"><input type="number" id="sim_6" value="7" min="0" max="20" step="0.5" onchange="runSim()" style="width:60px;text-align:center;font-family:'IBM Plex Mono';font-size:16px;font-weight:700;border:2px solid var(--blue);border-radius:6px;padding:6px;background:#fff"><span style="font-size:14px;font-weight:700">%</span></div></div>
+<div style="background:var(--surface);border-radius:var(--rs);padding:14px;text-align:center;border:2px solid var(--green)"><div style="font-weight:700;font-size:13px;margin-bottom:6px">12 Months</div><div style="display:flex;align-items:center;justify-content:center;gap:4px"><input type="number" id="sim_12" value="10" min="0" max="20" step="0.5" onchange="runSim()" style="width:60px;text-align:center;font-family:'IBM Plex Mono';font-size:16px;font-weight:700;border:2px solid var(--green);border-radius:6px;padding:6px;background:#fff"><span style="font-size:14px;font-weight:700">%</span></div></div>
+</div>
+<div class="cd" style="margin-bottom:16px;border:1px solid var(--border)"><div class="cd-h"><h3>Tier Monthly Payment Rates</h3><span style="font-size:11px;color:var(--t2)">% of debt paid per month</span></div><div class="cd-b" style="padding:12px 20px">
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">
+<div style="text-align:center"><span class="tier tier-A" style="font-size:11px;padding:3px 10px">Tier A</span><div style="margin-top:6px;display:flex;align-items:center;justify-content:center;gap:3px"><input type="number" id="sim_tA" value="2.5" min="0.5" max="50" step="0.5" onchange="runSim()" style="width:55px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:6px;padding:5px;background:#fff"><span style="font-size:11px">%/mo</span></div></div>
+<div style="text-align:center"><span class="tier tier-B" style="font-size:11px;padding:3px 10px">Tier B</span><div style="margin-top:6px;display:flex;align-items:center;justify-content:center;gap:3px"><input type="number" id="sim_tB" value="4" min="0.5" max="50" step="0.5" onchange="runSim()" style="width:55px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:6px;padding:5px;background:#fff"><span style="font-size:11px">%/mo</span></div></div>
+<div style="text-align:center"><span class="tier tier-C" style="font-size:11px;padding:3px 10px">Tier C</span><div style="margin-top:6px;display:flex;align-items:center;justify-content:center;gap:3px"><input type="number" id="sim_tC" value="6" min="0.5" max="50" step="0.5" onchange="runSim()" style="width:55px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:6px;padding:5px;background:#fff"><span style="font-size:11px">%/mo</span></div></div>
+<div style="text-align:center"><span class="tier tier-D" style="font-size:11px;padding:3px 10px">Tier D</span><div style="margin-top:6px;display:flex;align-items:center;justify-content:center;gap:3px"><input type="number" id="sim_tD" value="10" min="0.5" max="50" step="0.5" onchange="runSim()" style="width:55px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:6px;padding:5px;background:#fff"><span style="font-size:11px">%/mo</span></div></div>
+<div style="text-align:center"><span class="tier tier-E" style="font-size:11px;padding:3px 10px">Tier E</span><div style="margin-top:6px;display:flex;align-items:center;justify-content:center;gap:3px"><input type="number" id="sim_tE" value="40" min="0.5" max="100" step="1" onchange="runSim()" style="width:55px;text-align:center;font-family:'IBM Plex Mono';font-size:13px;font-weight:600;border:1px solid var(--border);border-radius:6px;padding:5px;background:#fff"><span style="font-size:11px">%/mo</span></div></div>
+</div>
+</div></div>
+<div style="display:flex;gap:10px;margin-bottom:20px"><button class="btn btn-blue" onclick="runSim()">Run Simulation</button><button class="btn btn-outline" onclick="resetSim()">Reset to Default</button><button class="btn btn-green" onclick="applySim()">Apply to Main Tool</button></div>
+</div></div>
+<div id="simResults"></div>
+<div class="cd"><div class="cd-h"><h3>AI Recommendation</h3></div><div class="cd-b"><div id="simAdvice"></div></div></div>
+</div>
 <div id="p5" class="pn"><div class="cd ag-card"><div class="cd-h"><h3>Generate Debt Repayment Agreement</h3></div><div class="cd-b">
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
 <div class="cg" style="flex-direction:column;align-items:flex-start;gap:4px"><label>Entity</label><select id="ag_e" onchange="genAG()" style="width:100%"></select></div>
@@ -176,7 +199,68 @@ function dlHTML(){const c=document.getElementById('agContent');if(!c)return;cons
 const blob=new Blob([html],{type:'text/html'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`IBDRS_Agreement_${e?.i||'entity'}.html`;a.click();toast('Agreement saved as HTML')}
 function cpTxt(){const c=document.getElementById('agContent');if(!c)return;navigator.clipboard.writeText(c.innerText).then(()=>toast('Agreement copied to clipboard')).catch(()=>{const t=document.createElement('textarea');t.value=c.innerText;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);toast('Copied!')})}
 function T(id,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.pn').forEach(p=>p.classList.remove('on'));document.getElementById(id).classList.add('on');btn.classList.add('on')}
-initEP();R();
+function resetSim(){document.getElementById('sim_1').value=1.5;document.getElementById('sim_3').value=3;document.getElementById('sim_6').value=7;document.getElementById('sim_12').value=10;document.getElementById('sim_tA').value=2.5;document.getElementById('sim_tB').value=4;document.getElementById('sim_tC').value=6;document.getElementById('sim_tD').value=10;document.getElementById('sim_tE').value=40;runSim()}
+function applySim(){CM[1].inc=+document.getElementById('sim_1').value/100;CM[3].inc=+document.getElementById('sim_3').value/100;CM[6].inc=+document.getElementById('sim_6').value/100;CM[12].inc=+document.getElementById('sim_12').value/100;TP.A.mp=+document.getElementById('sim_tA').value/100;TP.B.mp=+document.getElementById('sim_tB').value/100;TP.C.mp=+document.getElementById('sim_tC').value/100;TP.D.mp=+document.getElementById('sim_tD').value/100;TP.E.mp=+document.getElementById('sim_tE').value/100;R();toast('Rates applied to main tool! All tabs updated.')}
+function runSim(){
+  const rates={1:+document.getElementById('sim_1').value/100,3:+document.getElementById('sim_3').value/100,6:+document.getElementById('sim_6').value/100,12:+document.getElementById('sim_12').value/100};
+  const tRates={A:+document.getElementById('sim_tA').value/100,B:+document.getElementById('sim_tB').value/100,C:+document.getElementById('sim_tC').value/100,D:+document.getElementById('sim_tD').value/100,E:+document.getElementById('sim_tE').value/100};
+  const td=D.reduce((a,e)=>a+e.d,0);
+  const scenarios=[1,3,6,12].map(cm=>{
+    let p=0,inc=0,settled=0;
+    D.forEach((e,i)=>{
+      const enrolled=i<Math.round(D.length*.75);if(!enrolled)return;
+      const t=tr(e.d),mp=tRates[t],monthly=e.d*mp;
+      const tp=Math.min(e.d,monthly*cm);const incAmt=e.d*rates[cm];
+      p+=tp;inc+=incAmt;settled+=Math.min(e.d,tp+incAmt);
+    });
+    const rem=td-settled-(td*.25);// 25% not enrolled
+    const netCollected=p;const netCost=inc;const roi=netCost>0?Math.round(netCollected/netCost):0;
+    return{cm,p,inc,settled,rem:Math.max(0,td-settled),roi,rate:rates[cm],netRec:settled/td};
+  });
+  // Per-tier breakdown at 12mo
+  const tiers=['A','B','C','D','E'];
+  const tierBreak=tiers.map(t=>{
+    const ents=D.filter(e=>tr(e.d)===t);
+    const debt=ents.reduce((a,e)=>a+e.d,0);
+    const mp=tRates[t];
+    const tp12=ents.reduce((a,e)=>a+Math.min(e.d,e.d*mp*12),0);
+    const inc12=ents.reduce((a,e)=>a+e.d*rates[12],0);
+    const settled12=ents.reduce((a,e)=>a+Math.min(e.d,e.d*mp*12+e.d*rates[12]),0);
+    return{t,n:ents.length,debt,tp12,inc12,settled12,rec:debt>0?settled12/debt:0,monthlyEx:ents.length>0?ents[0].d*mp:0,exDebt:ents.length>0?ents[0].d:0};
+  });
+  const colors=['var(--yellow)','var(--orange)','var(--blue)','var(--green)'];
+  const labels=['1 Month','3 Months','6 Months','12 Months'];
+  let bestIdx=0;let bestScore=0;
+  scenarios.forEach((s,i)=>{const score=s.settled-s.inc*1.5;if(score>bestScore){bestScore=score;bestIdx=i}});
+  document.getElementById('simResults').innerHTML=`
+<div class="cd" style="margin-bottom:20px"><div class="cd-h"><h3>Scenario Comparison (75% Enrollment)</h3></div><div class="cd-b">
+<div class="scenario-grid">${scenarios.map((s,i)=>`<div class="scenario-card${i===bestIdx?' best':''}" style="border-color:${colors[i]}"><h4 style="color:${colors[i]}">${labels[i]}</h4><div class="sp">${fp(s.rate)} incentive</div><div class="sv" style="color:${colors[i]}">${f$(s.settled)}</div><div style="font-size:10px;color:var(--t3)">recovered of ${f$(td)}</div><div class="sd">Cash collected: <b>${f$(s.p)}</b><br>Incentive cost: <b class="org">${f$(s.inc)}</b><br>Net recovery: <b>${fp(s.netRec)}</b><br>ROI: <b>${s.roi}:1</b><br>Remaining: <b class="neg">${f$(s.rem)}</b></div>${i===bestIdx?'<div style="margin-top:6px;font-size:9px;font-weight:700;color:var(--green)">★ BEST NET VALUE</div>':''}</div>`).join('')}</div>
+</div></div>
+<div class="cd" style="margin-bottom:20px"><div class="cd-h"><h3>Tier Impact at 12-Month Commitment</h3></div><div class="cd-b">
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">${tierBreak.map(tb=>`<div style="background:var(--surface);border-radius:var(--rs);padding:14px;text-align:center"><span class="tier tier-${tb.t}" style="font-size:11px;padding:3px 10px">Tier ${tb.t}</span><div style="font-size:10px;color:var(--t3);margin-top:6px">${tb.n} entities</div><div style="font-family:'IBM Plex Mono';font-size:13px;font-weight:700;color:var(--red);margin-top:4px">${f$(tb.debt)}</div><div style="font-size:9px;color:var(--t3)">total debt</div><div style="font-family:'IBM Plex Mono';font-size:13px;font-weight:700;color:var(--green);margin-top:4px">${f$(tb.settled12)}</div><div style="font-size:9px;color:var(--t3)">${fp(tb.rec)} recovery</div><div style="font-size:9px;color:var(--orange);margin-top:2px">Inc cost: ${f$(tb.inc12)}</div><div style="margin-top:6px;height:6px;background:var(--border);border-radius:3px;overflow:hidden"><div style="height:100%;width:${Math.min(100,tb.rec*100)}%;background:var(--green);border-radius:3px"></div></div></div>`).join('')}</div>
+</div></div>`;
+  // AI Advice
+  const s12=scenarios[3],s6=scenarios[2],s3=scenarios[1],s1=scenarios[0];
+  const incCostPct12=s12.inc/td*100;
+  const spread12_1=rates[12]-rates[1];
+  let advice=[];
+  if(incCostPct12>12)advice.push({type:'warn',title:'High Incentive Cost',text:`At ${fp(rates[12])} for 12-month, your total incentive cost is ${f$(s12.inc)} (${incCostPct12.toFixed(1)}% of total debt). This is high — consider reducing to 8-9% max to keep costs under 10% of total debt.`});
+  else if(incCostPct12<5)advice.push({type:'good',title:'Conservative Incentive Budget',text:`Total incentive cost at 12-month is only ${incCostPct12.toFixed(1)}% of debt. This is conservative and low-risk. You could afford to offer slightly higher rates to increase enrollment motivation.`});
+  else advice.push({type:'good',title:'Balanced Incentive Cost',text:`Incentive cost of ${incCostPct12.toFixed(1)}% of debt at 12-month is well-balanced. ROI of ${s12.roi}:1 means every $1 of incentive generates $${s12.roi} in cash.`});
+  if(spread12_1<0.05)advice.push({type:'warn',title:'Low Spread Between 1mo and 12mo',text:`The gap between 1-month (${fp(rates[1])}) and 12-month (${fp(rates[12])}) is only ${fp(spread12_1)}. Entities have little reason to commit long-term. Increase the spread — e.g. lower 1mo to 0.5% or raise 12mo to 12%.`});
+  else advice.push({type:'good',title:'Good Incentive Gradient',text:`The spread from ${fp(rates[1])} to ${fp(rates[12])} creates a clear motivation ladder. Each step up in commitment gives a meaningful jump in savings.`});
+  const overSettled=tierBreak.filter(tb=>tb.rec>1.05);
+  if(overSettled.length>0)advice.push({type:'warn',title:`Tier ${overSettled.map(o=>o.t).join(',')} Over-Settled`,text:`With these rates, Tier ${overSettled.map(o=>o.t).join(' and ')} entities would have payments + incentive exceeding their debt. The excess incentive is wasted. Lower the monthly rate or incentive for these tiers.`});
+  const underSettled=tierBreak.filter(tb=>tb.rec<0.3&&tb.debt>5000);
+  if(underSettled.length>0)advice.push({type:'info',title:`Tier ${underSettled.map(o=>o.t).join(',')} Low Recovery`,text:`Tier ${underSettled.map(o=>o.t).join(' and ')} only recovers ${underSettled.map(o=>fp(o.rec)).join(', ')} at 12 months. Consider increasing the monthly rate for these tiers to accelerate recovery.`});
+  if(s12.roi>=6)advice.push({type:'good',title:'Strong ROI',text:`12-month ROI of ${s12.roi}:1 is excellent. You collect ${f$(s12.p)} in actual cash for ${f$(s12.inc)} in incentive cost. This is an easy sell to leadership.`});
+  else if(s12.roi<3)advice.push({type:'warn',title:'Low ROI',text:`12-month ROI of only ${s12.roi}:1. You're giving too much incentive relative to what you collect. Either increase monthly payment rates or decrease incentive percentages.`});
+  advice.push({type:'info',title:'Budget Summary',text:`At 75% enrollment, 12-month commitment:\n• Total cash in: ${f$(s12.p)}\n• Incentive budget needed: ${f$(s12.inc)}\n• Net debt reduction: ${f$(s12.settled)}\n• Remaining after program: ${f$(s12.rem)}\n• Net recovery rate: ${fp(s12.netRec)}`});
+  const advColors={warn:'var(--red)',good:'var(--green)',info:'var(--blue)'};
+  const advIcons={warn:'⚠️',good:'✅',info:'💡'};
+  document.getElementById('simAdvice').innerHTML=advice.map(a=>`<div class="ri" style="border-color:${advColors[a.type]}"><strong>${advIcons[a.type]} ${a.title}</strong>${a.text.replace(/\n/g,'<br>')}</div>`).join('');
+}
+initEP();R();setTimeout(runSim,100);
 </script>
 </body>
 </html>
