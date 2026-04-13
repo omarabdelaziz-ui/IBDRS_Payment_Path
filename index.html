@@ -308,7 +308,49 @@ var colors2=['var(--blue)','var(--green)','var(--orange)'];var cards='';
 for(var pi=0;pi<3;pi++){var p=plans[pi],best=pi===1;cards+='<div class="scenario-card'+(best?' best':'')+'" style="border-color:'+colors2[pi]+'"><h4 style="color:'+colors2[pi]+';font-size:12px">'+p.label+'</h4><div class="sp">'+p.cm+'mo &rarr; '+(p.rate*100).toFixed(1)+'%</div><div style="font-family:IBM Plex Mono;font-size:16px;font-weight:700;color:'+colors2[pi]+';margin:8px 0">CAD '+Math.round(p.settled).toLocaleString()+'</div><div class="sd">'+L('pay')+'s: <b>'+f$(p.tp)+'</b><br>Incentive: <b class="pos">'+f$(p.inc)+'</b><br>Remaining: <b class="'+(p.rem>0?'neg':'pos')+'">'+f$(p.rem)+'</b><br>Recovery: <b>'+fp(p.settled/dC2)+'</b></div>'+(best?'<div style="margin-top:6px;font-size:9px;font-weight:700;color:var(--green)">'+L('rec')+'</div>':'')+'</div>'}
 var tbl2='';for(i=0;i<12;i++){var nv=i<e.net.length?e.net[i]:0;tbl2+='<tr><td style="font-weight:600">'+IM[i]+'</td><td class="R M" style="color:'+(nv>=0?'var(--green)':'var(--red)')+'">'+f$(nv)+'</td><td class="R M">'+f$(plans[0].plan[i])+'</td><td class="R M" style="font-weight:600;color:var(--green)">'+f$(plans[1].plan[i])+'</td><td class="R M org">'+f$(plans[2].plan[i])+'</td></tr>'}
 tbl2+='<tr class="total-row"><td><b>'+L('total')+'</b></td><td class="R M"><b>'+f$(netTotal)+'</b></td><td class="R M"><b>'+f$(plans[0].tp)+'</b></td><td class="R M pos"><b>'+f$(plans[1].tp)+'</b></td><td class="R M org"><b>'+f$(plans[2].tp)+'</b></td></tr>';
-document.getElementById('cfsPlanSection').innerHTML='<div class="cd" style="margin-top:20px"><div class="cd-h"><h3>'+L('planTitle')+'</h3><span style="font-size:11px;color:var(--t2)">'+e.n+' | Debt: CAD '+Math.round(dC2).toLocaleString()+' | Tier '+t2+'</span></div><div class="cd-b"><div style="font-size:11px;color:var(--t2);margin-bottom:16px;padding:10px;background:var(--surface);border-radius:var(--rs)"><b>'+L('how')+'</b><br>'+L('std')+': '+L('stdD')+'<br>'+L('cfs')+': '+L('cfsD')+'<br>'+L('bud')+': '+L('budD')+'</div><div class="scenario-grid" style="grid-template-columns:repeat(3,1fr)">'+cards+'</div><div class="tw" style="margin-top:16px"><table><thead><tr><th>'+L('mo')+'</th><th class="R">'+L('netCF')+' (CFS)</th><th class="R">'+L('std')+'</th><th class="R">'+L('cfs')+'</th><th class="R">'+L('bud')+'</th></tr></thead><tbody>'+tbl2+'</tbody></table></div></div></div>'}
+
+// ===== DETAILED RECOMMENDED PLAN SCHEDULE =====
+var recPlan=plans[1]; // CFS-Adjusted is recommended
+var detailTbl='';var cumPaid=0;var bal=dC2;var incApplied=false;
+for(i=0;i<12;i++){
+  var payment=i<recPlan.cm?recPlan.plan[i]:0;
+  var incThis=0;
+  if(i===recPlan.cm-1&&!incApplied){incThis=recPlan.inc;incApplied=true}
+  cumPaid+=payment;
+  bal=Math.max(0,bal-payment-incThis);
+  var cfsNet=i<e.net.length?e.net[i]:0;
+  var canAfford=cfsNet>0&&cfsNet>=payment*0.5;
+  var status=i>=recPlan.cm?'—':(bal<0.5?'<b class="pos">SETTLED</b>':'<span class="blu">Active</span>');
+  var capacityFlag=i>=recPlan.cm?'':'<span style="font-size:9px;padding:2px 6px;border-radius:4px;background:'+(cfsNet<=0?'rgba(248,90,64,.1);color:var(--red)':cfsNet<payment?'rgba(255,200,69,.15);color:#b8860b':'rgba(0,193,110,.1);color:var(--green)')+';">'+(cfsNet<=0?'Deficit month':(cfsNet<payment?'Tight':'Comfortable'))+'</span>';
+  detailTbl+='<tr'+(i>=recPlan.cm?' style="opacity:.4"':'')+'>';
+  detailTbl+='<td style="font-weight:'+(i<recPlan.cm?'600':'400')+'">'+IM[i]+(incThis>0?' <span style="font-size:9px;color:var(--green)">(+INCENTIVE)</span>':'')+'</td>';
+  detailTbl+='<td class="R M" style="color:'+(cfsNet>=0?'var(--green)':'var(--red)')+'">'+f$(cfsNet)+'</td>';
+  detailTbl+='<td class="R M '+(payment>0?'pos':'')+'">'+f$(payment)+'</td>';
+  detailTbl+='<td class="R M '+(incThis>0?'org':'')+'">'+( incThis>0?f$(incThis):'—')+'</td>';
+  detailTbl+='<td class="R M blu">'+f$(cumPaid+(incApplied&&i>=recPlan.cm-1?recPlan.inc:0))+'</td>';
+  detailTbl+='<td class="R M '+(bal>0.5?'neg':'pos')+'">'+f$(bal)+'</td>';
+  detailTbl+='<td>'+capacityFlag+'</td>';
+  detailTbl+='<td style="font-size:10px">'+status+'</td>';
+  detailTbl+='</tr>';
+}
+detailTbl+='<tr class="total-row"><td><b>TOTAL</b></td><td></td><td class="R M pos"><b>'+f$(recPlan.tp)+'</b></td><td class="R M org"><b>'+f$(recPlan.inc)+'</b></td><td class="R M blu"><b>'+f$(recPlan.tp+recPlan.inc)+'</b></td><td class="R M '+(recPlan.rem>0?'neg':'pos')+'"><b>'+f$(recPlan.rem)+'</b></td><td></td><td></td></tr>';
+
+// Summary box
+var summaryBox='<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">';
+summaryBox+='<div style="background:var(--surface);border-radius:var(--rs);padding:12px;border-left:4px solid var(--green)"><div style="font-size:9px;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:4px">Recommended Plan</div><div style="font-family:IBM Plex Mono;font-size:16px;font-weight:700;color:var(--green)">'+recPlan.label+'</div><div style="font-size:10px;color:var(--t2);margin-top:4px">'+recPlan.cm+' months at '+(recPlan.rate*100).toFixed(1)+'% incentive</div></div>';
+summaryBox+='<div style="background:var(--surface);border-radius:var(--rs);padding:12px;border-left:4px solid var(--blue)"><div style="font-size:9px;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:4px">Total Cash Payments</div><div style="font-family:IBM Plex Mono;font-size:16px;font-weight:700;color:var(--blue)">CAD '+Math.round(recPlan.tp).toLocaleString()+'</div><div style="font-size:10px;color:var(--t2);margin-top:4px">over '+recPlan.cm+' monthly installments</div></div>';
+summaryBox+='<div style="background:var(--surface);border-radius:var(--rs);padding:12px;border-left:4px solid var(--orange)"><div style="font-size:9px;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:4px">Incentive Earned</div><div style="font-family:IBM Plex Mono;font-size:16px;font-weight:700;color:var(--orange)">CAD '+Math.round(recPlan.inc).toLocaleString()+'</div><div style="font-size:10px;color:var(--t2);margin-top:4px">'+(recPlan.rate*100).toFixed(1)+'% of CAD '+Math.round(dC2).toLocaleString()+' debt</div></div>';
+summaryBox+='<div style="background:var(--surface);border-radius:var(--rs);padding:12px;border-left:4px solid '+(recPlan.rem>0?'var(--red)':'var(--green)')+'"><div style="font-size:9px;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:4px">After Program</div><div style="font-family:IBM Plex Mono;font-size:16px;font-weight:700;color:'+(recPlan.rem>0?'var(--red)':'var(--green)')+'">CAD '+Math.round(recPlan.rem).toLocaleString()+'</div><div style="font-size:10px;color:var(--t2);margin-top:4px">'+(recPlan.rem>0?'rolls to next MC term':'FULLY SETTLED')+'</div></div>';
+summaryBox+='</div>';
+
+// Capacity warning for tight months
+var tightMonths=0;for(i=0;i<recPlan.cm;i++){if(e.net[i]<=0||e.net[i]<recPlan.plan[i]*0.5)tightMonths++}
+var capWarning='';
+if(tightMonths>recPlan.cm*0.5){capWarning='<div class="ri" style="border-color:var(--red);margin-bottom:16px"><strong>⚠️ Capacity Warning</strong>'+tightMonths+' of '+recPlan.cm+' payment months fall in deficit or tight cash flow periods. Consider: (1) reducing installment amounts, (2) shifting to a shorter commitment, or (3) timing payments to align with surplus months.</div>'}
+else if(tightMonths>0){capWarning='<div class="ri" style="border-color:var(--orange);margin-bottom:16px"><strong>💡 Note</strong>'+tightMonths+' month(s) have tight cash flow relative to installment amount. The CFS-Adjusted plan already accounts for this by reducing payments in those months.</div>'}
+
+document.getElementById('cfsPlanSection').innerHTML='<div class="cd" style="margin-top:20px"><div class="cd-h"><h3>'+L('planTitle')+'</h3><span style="font-size:11px;color:var(--t2)">'+e.n+' | Debt: CAD '+Math.round(dC2).toLocaleString()+' | Tier '+t2+'</span></div><div class="cd-b"><div style="font-size:11px;color:var(--t2);margin-bottom:16px;padding:10px;background:var(--surface);border-radius:var(--rs)"><b>'+L('how')+'</b><br>'+L('std')+': '+L('stdD')+'<br>'+L('cfs')+': '+L('cfsD')+'<br>'+L('bud')+': '+L('budD')+'</div><div class="scenario-grid" style="grid-template-columns:repeat(3,1fr)">'+cards+'</div><div class="tw" style="margin-top:16px"><table><thead><tr><th>'+L('mo')+'</th><th class="R">'+L('netCF')+' (CFS)</th><th class="R">'+L('std')+'</th><th class="R">'+L('cfs')+'</th><th class="R">'+L('bud')+'</th></tr></thead><tbody>'+tbl2+'</tbody></table></div></div></div>'+
+'<div class="cd" style="margin-top:20px"><div class="cd-h"><h3>Detailed Recommended Schedule — '+recPlan.label+'</h3><span style="font-size:11px;color:var(--t2)">Month-by-month breakdown with running balance, incentive timing, and capacity flags</span></div><div class="cd-b">'+summaryBox+capWarning+'<div class="tw"><table><thead><tr><th>Month</th><th class="R">Entity CFS Net (CAD)</th><th class="R">Payment Due (CAD)</th><th class="R">Incentive</th><th class="R">Cumulative Paid</th><th class="R">Remaining Debt</th><th>Capacity</th><th>Status</th></tr></thead><tbody><tr style="background:var(--surface)"><td style="font-weight:600">Opening</td><td class="R">—</td><td class="R">—</td><td class="R">—</td><td class="R M">$0</td><td class="R M neg">'+f$(dC2)+'</td><td></td><td>—</td></tr>'+detailTbl+'</tbody></table></div></div></div>'}
 
 
 function fLC(n,c){
