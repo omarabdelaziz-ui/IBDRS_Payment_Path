@@ -424,6 +424,7 @@ document.getElementById('cfsPlanSection').innerHTML='<div class="cd" style="marg
 
   '<div class="cd" style="margin-top:20px"><div class="cd-h"><h3>Month-by-Month Narrative</h3><span style="font-size:11px;color:var(--t2)">What happens each month in plain language</span></div><div class="cd-b">'+narrativeItems+'</div></div>';
 }())
+} // end renderCFS
 
 
 function fLC(n,c){
@@ -453,22 +454,24 @@ function goToCFS(){
 }
 
 // ===== CROSS-TAB ENTITY SYNC =====
+var syncing=false;
 function syncEntity(source){
+  if(syncing) return;
+  syncing=true;
   var iso;
   if(source==='cfs') iso=document.getElementById('cfs_e').value;
   else if(source==='ed') iso=document.getElementById('es').value;
   else if(source==='ag') iso=document.getElementById('ag_e').value;
-  if(!iso) return;
-  // Sync to all other dropdowns
+  if(!iso){syncing=false;return}
   var targets=['es','cfs_e','ag_e'];
   targets.forEach(function(id){
     var sel=document.getElementById(id);
     if(sel){for(var j=0;j<sel.options.length;j++){if(sel.options[j].value===iso){sel.selectedIndex=j;break}}}
   });
-  // Re-render the target tabs (but not the source to avoid infinite loop)
   if(source!=='ed') ED();
   if(source!=='cfs') renderCFS();
   if(source!=='ag') genAG();
+  syncing=false;
 }
 
 function sendToAgreement(){
@@ -512,11 +515,13 @@ function sendToAgreementFromED(){
   toast('Entity loaded into Agreement tab');
 }
 
-// Also sync agreement entity changes back
-var origGenAG=genAG;
-document.getElementById('ag_e').addEventListener('change',function(){syncEntity('ag')});
+// Also sync agreement entity changes back — done after init
 
 initEP();initCFS();R();setTimeout(runSim,100);
+
+// Now safe to add listener since ag_e is populated
+try{document.getElementById('ag_e').addEventListener('change',function(){if(!syncing)syncEntity('ag')})}catch(ex){}
+
 </script>
 </body>
 </html>
