@@ -96,7 +96,7 @@ table{width:100%;border-collapse:collapse}thead{position:sticky;top:0;z-index:5}
 <button class="tab" onclick="T('p5',this)" style="background:rgba(0,193,110,.1);color:var(--green)">Generate Agreement</button>
 </div>
 <div id="p1" class="pn on"><div class="g2"><div class="cd"><div class="cd-h"><h3>Monthly Collections</h3></div><div class="cd-b"><div id="c1" class="bca"></div></div></div><div class="cd"><div class="cd-h"><h3>Cumulative Recovered</h3></div><div class="cd-b"><div id="c2" class="bca"></div></div></div></div><div class="cd" style="margin-bottom:20px"><div class="cd-h"><h3>Recovery by Tier</h3></div><div class="cd-b"><div id="tierSum"></div></div></div><div class="tw"><table><thead><tr><th>Tier</th><th>Region</th><th>ISO</th><th>Entity</th><th class="R">Debt</th><th class="R">Monthly</th><th>Commitment</th><th class="R">Payments</th><th class="R">Incentive</th><th class="R">Settled</th><th style="min-width:90px">Progress</th><th class="R">Remaining</th></tr></thead><tbody id="tb"></tbody></table></div></div>
-<div id="p2" class="pn"><div class="cbar" style="margin-bottom:16px"><div class="cg"><label>Entity</label><select id="es" onchange="ED()" style="min-width:300px"></select></div></div><div id="ed"></div></div>
+<div id="p2" class="pn"><div class="cbar" style="margin-bottom:16px"><div class="cg"><label>Entity</label><select id="es" onchange="ED();syncEntity('ed')" style="min-width:300px"></select></div><button class="btn btn-outline" onclick="goToCFS()" style="margin-left:auto">📊 View CFS</button><button class="btn btn-green" onclick="sendToAgreementFromED()">→ Generate Agreement</button></div><div id="ed"></div></div>
 <div id="p3" class="pn"><div id="rcards" class="g4"></div><div class="g2"><div class="cd"><div class="cd-h"><h3>Debt by Region</h3></div><div class="cd-b"><div id="rc1" class="bca"></div></div></div><div class="cd"><div class="cd-h"><h3>Recovery by Region</h3></div><div class="cd-b"><div id="rc2" class="bca"></div></div></div></div><div class="tw"><table><thead><tr><th>Region</th><th class="R">#</th><th class="R">Total Debt</th><th class="R">Payments</th><th class="R">Incentives</th><th class="R">Settled</th><th class="R">Remaining</th><th class="R">Recovery %</th></tr></thead><tbody id="rt"></tbody></table></div></div>
 <div id="p4" class="pn"><div class="cd" style="margin-bottom:20px"><div class="cd-h"><h3>Global Scenario Comparison (75% enrollment)</h3></div><div class="cd-b"><div id="gsc" class="scenario-grid"></div></div></div><div class="cd"><div class="cd-h"><h3>Strategic Recommendations</h3></div><div class="cd-b"><ul id="recs" class="rl"></ul></div></div></div>
 <div id="p6" class="pn">
@@ -123,10 +123,11 @@ table{width:100%;border-collapse:collapse}thead{position:sticky;top:0;z-index:5}
 </div>
 <div id="p7" class="pn">
 <div class="cd"><div class="cd-h"><h3>Entity CFS Capacity Analysis</h3><span style="font-size:11px;color:var(--t2)">All amounts in CAD | FY25.26 Executed Cash Flow Statements</span></div><div class="cd-b">
-<div style="display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap">
+<div style="display:flex;gap:14px;margin-bottom:16px;flex-wrap:wrap;align-items:flex-end">
 <div class="cg"><label>Language</label><select onchange="setLang(this.value)" style="min-width:100px"><option value="en">English</option><option value="fr">Français</option><option value="es">Español</option></select></div>
-<div class="cg"><label>Entity</label><select id="cfs_e" onchange="renderCFS()" style="min-width:300px"></select></div>
+<div class="cg"><label>Entity</label><select id="cfs_e" onchange="renderCFS();syncEntity('cfs')" style="min-width:300px"></select></div>
 <div class="cg"><label>View</label><select id="cfs_view" onchange="renderCFS()"><option value="executed">Executed CFS</option><option value="budget">Budget vs Actual</option><option value="capacity">Payment Capacity</option></select></div>
+<button class="btn btn-green" onclick="sendToAgreement()" style="margin-left:auto">→ Generate Agreement for this Entity</button>
 </div></div></div>
 <div id="cfsKPIs"></div>
 <div id="cfsCharts" class="g2"></div>
@@ -186,7 +187,7 @@ document.getElementById('kpis').innerHTML=`
 <div class="kpi"><div class="kpi-bar" style="background:var(--teal)"></div><div class="kpi-lb">Remaining</div><div class="kpi-v" style="color:${tR>0?'var(--red)':'var(--green)'}">${f$(tR)}</div><div class="kpi-s">${fp(tR/tD)} rolls over</div></div>`;
 document.getElementById('tierSum').innerHTML=`<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px">${Object.entries(bt).map(([t,v])=>`<div style="background:var(--surface);border-radius:var(--rs);padding:12px;text-align:center"><span class="tier tier-${t}" style="font-size:11px;padding:3px 10px">Tier ${t}</span><div style="font-size:10px;color:var(--t3);margin-top:6px">${v.n} entities | ${v.c} enrolled</div><div style="font-family:'IBM Plex Mono';font-size:14px;font-weight:700;color:var(--red);margin-top:4px">${f$(v.d)}</div><div style="font-size:9px;color:var(--t3)">debt</div><div style="font-family:'IBM Plex Mono';font-size:14px;font-weight:700;color:var(--green);margin-top:4px">${f$(v.s)}</div><div style="font-size:9px;color:var(--t3)">${v.d>0?fp(v.s/v.d):'0%'} recovery</div></div>`).join('')}</div>`;
 let h='';rows.forEach(r=>{const e=r.res,pg=r.enrolled?e.settled/r.d:0;
-h+=`<tr><td><span class="tier tier-${e.tier}">${e.tier}</span></td><td><span class="rg rg-${r.r}">${r.r}</span></td><td class="M">${r.i}</td><td style="font-weight:600;font-size:11px">${r.n}</td><td class="R M neg">${f$(r.d)}</td><td class="R M">${r.enrolled?f$(e.monthly)+'/mo':'—'}</td><td style="font-size:10px">${r.enrolled?`<span style="color:${e.cm.color};font-weight:700">${e.cm.label}</span> → ${fp(e.cm.inc)}`:'Not enrolled'}</td><td class="R M">${r.enrolled?f$(e.tp):'—'}</td><td class="R"><span class="ic">${r.enrolled?f$(e.inc):'—'}</span></td><td class="R M pos">${r.enrolled?f$(e.settled):'—'}</td><td><div class="prog"><div class="prog-f" style="width:${pg*100}%;background:${e.cm.color}"></div></div></td><td class="R M ${e.rem>0?'neg':'pos'}">${f$(e.rem)}</td></tr>`});
+h+=`<tr><td><span class="tier tier-${e.tier}">${e.tier}</span></td><td><span class="rg rg-${r.r}">${r.r}</span></td><td class="M">${r.i}</td><td style="font-weight:600;font-size:11px;cursor:pointer;color:var(--blue)" onclick="jumpToEntity('${r.i}')">${r.n}</td><td class="R M neg">${f$(r.d)}</td><td class="R M">${r.enrolled?f$(e.monthly)+'/mo':'—'}</td><td style="font-size:10px">${r.enrolled?`<span style="color:${e.cm.color};font-weight:700">${e.cm.label}</span> → ${fp(e.cm.inc)}`:'Not enrolled'}</td><td class="R M">${r.enrolled?f$(e.tp):'—'}</td><td class="R"><span class="ic">${r.enrolled?f$(e.inc):'—'}</span></td><td class="R M pos">${r.enrolled?f$(e.settled):'—'}</td><td><div class="prog"><div class="prog-f" style="width:${pg*100}%;background:${e.cm.color}"></div></div></td><td class="R M ${e.rem>0?'neg':'pos'}">${f$(e.rem)}</td></tr>`});
 h+=`<tr class="total-row"><td colspan="4"><b>${f.length} entities (${en} enrolled)</b></td><td class="R M"><b>${f$(tD)}</b></td><td colspan="2"></td><td class="R M"><b>${f$(tP)}</b></td><td class="R"><span class="ic">${f$(tI)}</span></td><td class="R M pos"><b>${f$(tP+tI)}</b></td><td></td><td class="R M"><b>${f$(tR)}</b></td></tr>`;
 document.getElementById('tb').innerHTML=h;BC('c1',ML,mc,'var(--blue)');let cum=[],c=0;mc.forEach(v=>{c+=v;cum.push(c)});BC('c2',ML,cum,'var(--green)');renderReg(rows);renderStrat();popES();popAG()}
 function BC(id,lb,vl,co){const mx=Math.max(...vl,1);document.getElementById(id).innerHTML=lb.map((l,i)=>`<div class="bc"><div class="bs" style="height:${Math.max(2,(vl[i]/mx)*150)}px;background:${co}" data-t="${f$(vl[i])}"></div><div class="bm">${l}</div></div>`).join('')}
@@ -350,7 +351,79 @@ if(tightMonths>recPlan.cm*0.5){capWarning='<div class="ri" style="border-color:v
 else if(tightMonths>0){capWarning='<div class="ri" style="border-color:var(--orange);margin-bottom:16px"><strong>💡 Note</strong>'+tightMonths+' month(s) have tight cash flow relative to installment amount. The CFS-Adjusted plan already accounts for this by reducing payments in those months.</div>'}
 
 document.getElementById('cfsPlanSection').innerHTML='<div class="cd" style="margin-top:20px"><div class="cd-h"><h3>'+L('planTitle')+'</h3><span style="font-size:11px;color:var(--t2)">'+e.n+' | Debt: CAD '+Math.round(dC2).toLocaleString()+' | Tier '+t2+'</span></div><div class="cd-b"><div style="font-size:11px;color:var(--t2);margin-bottom:16px;padding:10px;background:var(--surface);border-radius:var(--rs)"><b>'+L('how')+'</b><br>'+L('std')+': '+L('stdD')+'<br>'+L('cfs')+': '+L('cfsD')+'<br>'+L('bud')+': '+L('budD')+'</div><div class="scenario-grid" style="grid-template-columns:repeat(3,1fr)">'+cards+'</div><div class="tw" style="margin-top:16px"><table><thead><tr><th>'+L('mo')+'</th><th class="R">'+L('netCF')+' (CFS)</th><th class="R">'+L('std')+'</th><th class="R">'+L('cfs')+'</th><th class="R">'+L('bud')+'</th></tr></thead><tbody>'+tbl2+'</tbody></table></div></div></div>'+
-'<div class="cd" style="margin-top:20px"><div class="cd-h"><h3>Detailed Recommended Schedule — '+recPlan.label+'</h3><span style="font-size:11px;color:var(--t2)">Month-by-month breakdown with running balance, incentive timing, and capacity flags</span></div><div class="cd-b">'+summaryBox+capWarning+'<div class="tw"><table><thead><tr><th>Month</th><th class="R">Entity CFS Net (CAD)</th><th class="R">Payment Due (CAD)</th><th class="R">Incentive</th><th class="R">Cumulative Paid</th><th class="R">Remaining Debt</th><th>Capacity</th><th>Status</th></tr></thead><tbody><tr style="background:var(--surface)"><td style="font-weight:600">Opening</td><td class="R">—</td><td class="R">—</td><td class="R">—</td><td class="R M">$0</td><td class="R M neg">'+f$(dC2)+'</td><td></td><td>—</td></tr>'+detailTbl+'</tbody></table></div></div></div>'}
+'<div class="cd" style="margin-top:20px"><div class="cd-h"><h3>Detailed Recommended Schedule — '+recPlan.label+'</h3><span style="font-size:11px;color:var(--t2)">Month-by-month breakdown with running balance, incentive timing, and capacity flags</span></div><div class="cd-b">'+summaryBox+capWarning+'<div class="tw"><table><thead><tr><th>Month</th><th class="R">Entity CFS Net (CAD)</th><th class="R">Payment Due (CAD)</th><th class="R">Incentive</th><th class="R">Cumulative Paid</th><th class="R">Remaining Debt</th><th>Capacity</th><th>Status</th></tr></thead><tbody><tr style="background:var(--surface)"><td style="font-weight:600">Opening</td><td class="R">—</td><td class="R">—</td><td class="R">—</td><td class="R M">$0</td><td class="R M neg">'+f$(dC2)+'</td><td></td><td>—</td></tr>'+detailTbl+'</tbody></table></div></div></div>'+
+
+// ===== ENTITY FINANCIAL PROFILE =====
+(function(){
+  // Health Score: 0-100
+  var score=50;
+  if(netTotal>0) score+=15; else score-=10;
+  if(surplusMonths>=8) score+=15; else if(surplusMonths>=5) score+=5; else score-=10;
+  if(e.cl>e.op) score+=10; else score-=5;
+  if(e.bi>0){var bx2=e.ti/e.bi;if(bx2>=0.8) score+=10; else if(bx2<0.5) score-=10;}
+  if(avgNet>0&&avgNet>flatM) score+=10;
+  score=Math.max(0,Math.min(100,score));
+  var scoreColor=score>=70?'var(--green)':score>=40?'var(--orange)':'var(--red)';
+  var scoreLabel=score>=70?'Healthy':score>=40?'Moderate':'At Risk';
+
+  // Affordability ratio per month
+  var affRows='';var affBars='';
+  var maxAff=0;
+  for(var j=0;j<recPlan.cm;j++){
+    var cN=j<e.net.length?e.net[j]:0;var pmt=recPlan.plan[j];
+    var ratio=cN>0?(pmt/cN*100):999;
+    if(ratio<500&&ratio>maxAff) maxAff=ratio;
+  }
+  if(maxAff<1) maxAff=100;
+  for(var j=0;j<recPlan.cm;j++){
+    var cN=j<e.net.length?e.net[j]:0;var pmt=recPlan.plan[j];
+    var ratio=cN>0?(pmt/cN*100):0;
+    var rLabel=cN<=0?'N/A (deficit)':ratio>100?Math.round(ratio)+'% (exceeds surplus)':Math.round(ratio)+'% of surplus';
+    var rColor=cN<=0?'var(--red)':ratio>80?'var(--orange)':ratio>50?'var(--yellow)':'var(--green)';
+    var barW=cN>0?Math.min(100,(ratio/maxAff)*100):0;
+    affRows+='<tr><td style="font-weight:600">'+IM[j]+'</td><td class="R M" style="color:'+(cN>=0?'var(--green)':'var(--red)')+'">'+f$(cN)+'</td><td class="R M pos">'+f$(pmt)+'</td><td class="R" style="font-size:10px;color:'+rColor+'"><b>'+rLabel+'</b></td><td style="width:120px"><div style="height:8px;background:var(--surface);border-radius:4px;border:1px solid var(--border)"><div style="height:100%;width:'+barW+'%;background:'+rColor+';border-radius:4px"></div></div></td></tr>';
+  }
+
+  // Monthly narrative
+  var narrativeItems='';
+  var cumP2=0;var bal2=dC2;
+  for(var j=0;j<recPlan.cm;j++){
+    var cN=j<e.net.length?e.net[j]:0;var pmt=recPlan.plan[j];
+    var incN=j===recPlan.cm-1?recPlan.inc:0;
+    cumP2+=pmt;bal2=Math.max(0,bal2-pmt-incN);
+    var pctDone=((dC2-bal2)/dC2*100).toFixed(1);
+    var emoji=cN>pmt?'✅':cN>0?'⚠️':'🔴';
+    var narrative=emoji+' <b>'+IM[j]+':</b> ';
+    if(cN<=0) narrative+='Entity runs a <span class="neg">deficit of '+f$(Math.abs(cN))+' CAD</span> this month. Payment of <b>'+f$(pmt)+' CAD</b> will need to come from reserves or receivables. ';
+    else if(cN<pmt) narrative+='Surplus of <span class="pos">'+f$(cN)+' CAD</span> covers only '+(cN/pmt*100).toFixed(0)+'% of the <b>'+f$(pmt)+' CAD</b> installment. Remaining '+f$(pmt-cN)+' CAD from reserves. ';
+    else narrative+='Surplus of <span class="pos">'+f$(cN)+' CAD</span> comfortably covers the <b>'+f$(pmt)+' CAD</b> installment ('+(pmt/cN*100).toFixed(0)+'% of surplus). ';
+    if(incN>0) narrative+='<span class="org"><b>Incentive of '+f$(incN)+' CAD applied this month!</b></span> ';
+    narrative+='After payment: <b>'+f$(bal2)+' CAD remaining</b> ('+pctDone+'% of debt addressed).';
+    narrativeItems+='<div style="padding:10px 14px;border-radius:var(--rs);margin-bottom:6px;background:'+(j%2===0?'var(--surface)':'#fff')+';font-size:11px;line-height:1.7;border-left:3px solid '+(cN>pmt?'var(--green)':cN>0?'var(--orange)':'var(--red)')+'">'+narrative+'</div>';
+  }
+  // Final summary narrative
+  narrativeItems+='<div style="padding:12px 14px;border-radius:var(--rs);margin-top:10px;background:rgba(3,126,243,.04);font-size:11px;line-height:1.7;border:1px solid var(--blue)"><b>📊 Summary:</b> After '+recPlan.cm+' months, <b>'+f$(recPlan.tp)+' CAD</b> paid in cash + <b>'+f$(recPlan.inc)+' CAD</b> incentive = <b>'+f$(recPlan.tp+recPlan.inc)+' CAD</b> total debt addressed ('+fp((recPlan.tp+recPlan.inc)/dC2)+' of original debt). '+(recPlan.rem>0?'<span class="neg">'+f$(recPlan.rem)+' CAD remains</span> and rolls to the next MC term.':'<span class="pos"><b>Debt is fully settled!</b></span>')+'</div>';
+
+  return '<div class="cd" style="margin-top:20px"><div class="cd-h"><h3>Entity Financial Profile</h3><span style="font-size:11px;color:var(--t2)">'+e.n+' ('+e.i+') | '+e.r+' | Currency: '+e.c+'</span></div><div class="cd-b">'+
+  '<div style="display:grid;grid-template-columns:1fr 2fr;gap:20px;margin-bottom:20px">'+
+  '<div style="text-align:center;padding:20px;background:var(--surface);border-radius:var(--r);border:2px solid '+scoreColor+'"><div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--t3);margin-bottom:8px">Cash Flow Health Score</div><div style="font-family:IBM Plex Mono;font-size:48px;font-weight:800;color:'+scoreColor+'">'+score+'</div><div style="font-size:13px;font-weight:700;color:'+scoreColor+';margin-top:4px">'+scoreLabel+'</div><div style="margin-top:10px;height:8px;background:var(--border);border-radius:4px"><div style="height:100%;width:'+score+'%;background:'+scoreColor+';border-radius:4px"></div></div><div style="font-size:9px;color:var(--t3);margin-top:8px">Based on: net cash flow, surplus frequency,<br>cash position trend, budget execution</div></div>'+
+  '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">'+
+  '<div style="background:var(--surface);border-radius:var(--rs);padding:12px"><div style="font-size:9px;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:4px">Surplus Months</div><div style="font-family:IBM Plex Mono;font-size:20px;font-weight:700;color:var(--green)">'+surplusMonths+'<span style="font-size:12px;color:var(--t3)">/'+activeMonths+'</span></div></div>'+
+  '<div style="background:var(--surface);border-radius:var(--rs);padding:12px"><div style="font-size:9px;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:4px">Deficit Months</div><div style="font-family:IBM Plex Mono;font-size:20px;font-weight:700;color:var(--red)">'+deficitMonths+'<span style="font-size:12px;color:var(--t3)">/'+activeMonths+'</span></div></div>'+
+  '<div style="background:var(--surface);border-radius:var(--rs);padding:12px"><div style="font-size:9px;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:4px">Cash Trend</div><div style="font-family:IBM Plex Mono;font-size:20px;font-weight:700;color:'+(e.cl>=e.op?'var(--green)':'var(--red)')+'">'+(e.cl>=e.op?'↑ Growing':'↓ Declining')+'</div></div>'+
+  '<div style="background:var(--surface);border-radius:var(--rs);padding:12px"><div style="font-size:9px;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:4px">Avg Inflow/Month</div><div style="font-family:IBM Plex Mono;font-size:16px;font-weight:700;color:var(--green)">'+f$(activeMonths>0?e.ti/activeMonths:0)+'</div></div>'+
+  '<div style="background:var(--surface);border-radius:var(--rs);padding:12px"><div style="font-size:9px;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:4px">Avg Outflow/Month</div><div style="font-family:IBM Plex Mono;font-size:16px;font-weight:700;color:var(--red)">'+f$(activeMonths>0?e.to/activeMonths:0)+'</div></div>'+
+  '<div style="background:var(--surface);border-radius:var(--rs);padding:12px"><div style="font-size:9px;text-transform:uppercase;color:var(--t3);font-weight:600;margin-bottom:4px">Installment vs Avg Net</div><div style="font-family:IBM Plex Mono;font-size:16px;font-weight:700;color:'+(avgNet>flatM?'var(--green)':avgNet>0?'var(--orange)':'var(--red)')+'">'+(avgNet>0?(flatM/avgNet*100).toFixed(0)+'%':'N/A')+'</div></div>'+
+  '</div></div>'+
+  '</div></div>'+
+
+  '<div class="cd" style="margin-top:20px"><div class="cd-h"><h3>Payment Affordability Ratio — Per Month</h3><span style="font-size:11px;color:var(--t2)">How much of the entity\'s monthly surplus goes to the installment</span></div><div class="cd-b">'+
+  '<div style="font-size:11px;color:var(--t2);margin-bottom:12px;padding:8px 12px;background:var(--surface);border-radius:var(--rs)"><span style="color:var(--green)">■ &lt;50%</span> Comfortable — <span style="color:var(--yellow)">■ 50-80%</span> Manageable — <span style="color:var(--orange)">■ 80-100%</span> Tight — <span style="color:var(--red)">■ &gt;100% or Deficit</span> At Risk</div>'+
+  '<div class="tw"><table><thead><tr><th>Month</th><th class="R">Net CFS (CAD)</th><th class="R">Payment (CAD)</th><th class="R">Affordability</th><th>Ratio</th></tr></thead><tbody>'+affRows+'</tbody></table></div>'+
+  '</div></div>'+
+
+  '<div class="cd" style="margin-top:20px"><div class="cd-h"><h3>Month-by-Month Narrative</h3><span style="font-size:11px;color:var(--t2)">What happens each month in plain language</span></div><div class="cd-b">'+narrativeItems+'</div></div>';
+}())
 
 
 function fLC(n,c){
@@ -358,6 +431,90 @@ function fLC(n,c){
   if(Math.abs(n) >= 1000) return Math.round(n).toLocaleString();
   return n.toFixed(0);
 }
+
+function jumpToEntity(iso){
+  // Set entity in Entity Detail dropdown
+  var sel=document.getElementById('es');
+  for(var j=0;j<sel.options.length;j++){if(sel.options[j].value===iso){sel.selectedIndex=j;break}}
+  ED();
+  syncEntity('ed');
+  // Switch to Entity Detail tab
+  var tabs=document.querySelectorAll('.tab');
+  tabs.forEach(function(t){if(t.textContent.indexOf('Entity Detail')>-1){T('p2',t)}});
+  window.scrollTo(0,0);
+}
+
+function goToCFS(){
+  syncEntity('ed');
+  var tabs=document.querySelectorAll('.tab');
+  tabs.forEach(function(t){if(t.textContent.indexOf('CFS')>-1){T('p7',t)}});
+  renderCFS();
+  toast('Viewing CFS for '+document.getElementById('es').value);
+}
+
+// ===== CROSS-TAB ENTITY SYNC =====
+function syncEntity(source){
+  var iso;
+  if(source==='cfs') iso=document.getElementById('cfs_e').value;
+  else if(source==='ed') iso=document.getElementById('es').value;
+  else if(source==='ag') iso=document.getElementById('ag_e').value;
+  if(!iso) return;
+  // Sync to all other dropdowns
+  var targets=['es','cfs_e','ag_e'];
+  targets.forEach(function(id){
+    var sel=document.getElementById(id);
+    if(sel){for(var j=0;j<sel.options.length;j++){if(sel.options[j].value===iso){sel.selectedIndex=j;break}}}
+  });
+  // Re-render the target tabs (but not the source to avoid infinite loop)
+  if(source!=='ed') ED();
+  if(source!=='cfs') renderCFS();
+  if(source!=='ag') genAG();
+}
+
+function sendToAgreement(){
+  var iso=document.getElementById('cfs_e').value;
+  var e=CFS_DATA.find(function(x){return x.i===iso});
+  if(!e) return;
+  // Determine recommended commitment from CFS
+  var activeMonths=e.net.filter(function(x){return x!==0}).length;
+  var surplusMonths=e.net.filter(function(x){return x>0}).length;
+  var recCm='12';
+  if(activeMonths===0) recCm='3';
+  else if(surplusMonths<4) recCm='3';
+  else if(surplusMonths<7) recCm='6';
+  // Sync entity to agreement
+  syncEntity('cfs');
+  // Set recommended commitment
+  var agCm=document.getElementById('ag_cm');
+  for(var j=0;j<agCm.options.length;j++){if(agCm.options[j].value===recCm){agCm.selectedIndex=j;break}}
+  genAG();
+  // Switch to agreement tab
+  var tabs=document.querySelectorAll('.tab');
+  tabs.forEach(function(t){
+    if(t.textContent.indexOf('Agreement')>-1){T('p5',t)}
+  });
+  toast('Entity loaded into Agreement tab with '+recCm+'-month commitment (CFS recommended)');
+}
+
+function sendToAgreementFromED(){
+  var iso=document.getElementById('es').value;
+  // Sync entity
+  var targets=['cfs_e','ag_e'];
+  targets.forEach(function(id){
+    var sel=document.getElementById(id);
+    if(sel){for(var j=0;j<sel.options.length;j++){if(sel.options[j].value===iso){sel.selectedIndex=j;break}}}
+  });
+  genAG();
+  var tabs=document.querySelectorAll('.tab');
+  tabs.forEach(function(t){
+    if(t.textContent.indexOf('Agreement')>-1){T('p5',t)}
+  });
+  toast('Entity loaded into Agreement tab');
+}
+
+// Also sync agreement entity changes back
+var origGenAG=genAG;
+document.getElementById('ag_e').addEventListener('change',function(){syncEntity('ag')});
 
 initEP();initCFS();R();setTimeout(runSim,100);
 </script>
